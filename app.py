@@ -11,7 +11,7 @@ from predict_loss import engineering_review, load_model, predict_loss, read_inpu
 
 
 st.set_page_config(
-    page_title="تحليل الفاقد المحتمل",
+    page_title=" منصة تحليل الاحمال الكهربائية لكشف حالات الفاقد المحتملة",
     layout="wide",
 )
 
