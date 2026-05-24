@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from html import escape
 from io import BytesIO
 
 import pandas as pd
@@ -409,6 +410,14 @@ def probability_label(value: float) -> str:
     return f"{value:.1%}"
 
 
+def priority_label(row: pd.Series) -> str:
+    if str(row.get("VIExpertSeverity", "")) == "High":
+        return "حرجة"
+    if bool(row.get("LikelyHalfLoadJumper", False)):
+        return "عالية"
+    return "عالية"
+
+
 def choose_indicator(row: pd.Series) -> str:
     vi_reason = str(row.get("VIExpertReasons", "") or "").strip()
     engineering_reason = str(row.get("EngineeringReason", "") or "").strip()
@@ -476,6 +485,7 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
     if display.empty:
         return display
 
+    display["الأولوية"] = display.apply(priority_label, axis=1)
     display["نوع المؤشر"] = display.apply(evidence_category, axis=1)
     display["المؤشر الرئيسي"] = display.apply(choose_indicator, axis=1)
     display["احتمال الفاقد"] = display["LossProbability"].map(probability_label)
@@ -499,6 +509,7 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
 
     columns = [
         "Meter Number",
+        "الأولوية",
         "نوع المؤشر",
         "احتمال الفاقد",
         "المؤشر الرئيسي",
@@ -517,6 +528,32 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
     columns = [column for column in columns if column in display.columns]
 
     return display[columns].rename(columns={"Meter Number": "رقم العداد/الآلة"})
+
+
+def style_user_table(display: pd.DataFrame):
+    def style_row(row: pd.Series) -> list[str]:
+        marker_columns = {"الأولوية", "نوع المؤشر", "المؤشر الرئيسي", "احتمال الفاقد"}
+        if row.get("الأولوية") == "حرجة":
+            color = "background-color: #fff4e0; color: #4b2f08; font-weight: 700;"
+        elif "جمبر" in str(row.get("نوع المؤشر", "")):
+            color = "background-color: #eef7f5; color: #143f39; font-weight: 700;"
+        else:
+            color = "background-color: #f4f8fb; color: #18343a; font-weight: 700;"
+
+        return [color if column in marker_columns else "" for column in row.index]
+
+    return display.style.apply(style_row, axis=1)
+
+
+def metric_card(label: str, value: str, note: str = "") -> str:
+    note_html = f'<div class="metric-note">{escape(note)}</div>' if note else ""
+    return f"""
+    <div class="metric-card">
+        <div class="metric-label">{escape(label)}</div>
+        <div class="metric-value">{escape(value)}</div>
+        {note_html}
+    </div>
+    """
 
 
 def build_user_excel(unique_results: pd.DataFrame, all_results: pd.DataFrame) -> bytes:
@@ -569,9 +606,18 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
 st.markdown(
     """
     <div class="hero">
-        <div class="status-pill">تحليل عالي الثقة</div>
-        <h1>تحليل الفاقد المحتمل</h1>
-        <div class="app-subtitle">قائمة نهائية مختصرة بالعدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+        <div class="hero-inner">
+            <div>
+                <div class="status-pill">تحليل عالي الثقة</div>
+                <h1>تحليل الفاقد المحتمل</h1>
+                <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+            </div>
+            <div class="hero-panel">
+                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
+                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
+                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+            </div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -633,22 +679,53 @@ removed_duplicates = max(len(final_rows) - len(unique_final_rows), 0)
 analyzed_count = int((results_df["AnalysisStatus"] == "Analyzed").sum())
 invalid_count = int((results_df["AnalysisStatus"] != "Analyzed").sum())
 vi_high_count = int((results_df["VIExpertSeverity"] == "High").sum()) if "VIExpertSeverity" in results_df.columns else 0
+unique_vi_high_count = (
+    int((unique_final_rows["VIExpertSeverity"] == "High").sum())
+    if "VIExpertSeverity" in unique_final_rows.columns
+    else 0
+)
+unique_jumper_count = (
+    int(unique_final_rows["LikelyHalfLoadJumper"].sum())
+    if "LikelyHalfLoadJumper" in unique_final_rows.columns
+    else 0
+)
+highest_probability = (
+    unique_final_rows["LossProbability"].max()
+    if "LossProbability" in unique_final_rows.columns and not unique_final_rows.empty
+    else pd.NA
+)
 
+st.markdown(
+    '<div class="section-title"><h3>ملخص التشغيل</h3><span>تم تطبيق المعايير الفنية داخليًا قبل عرض القائمة النهائية</span></div>',
+    unsafe_allow_html=True,
+)
 metric_columns = st.columns(4)
-metric_columns[0].metric("إجمالي السجلات", f"{len(results_df):,}")
-metric_columns[1].metric("تم تحليلها", f"{analyzed_count:,}")
-metric_columns[2].metric("عدادات مؤكدة", f"{len(unique_final_rows):,}")
-metric_columns[3].metric("تكرارات مستبعدة", f"{removed_duplicates:,}")
+metric_columns[0].markdown(metric_card("إجمالي السجلات", f"{len(results_df):,}", "عدد القراءات المستلمة"), unsafe_allow_html=True)
+metric_columns[1].markdown(metric_card("تم تحليلها", f"{analyzed_count:,}", "سجلات مكتملة وصالحة"), unsafe_allow_html=True)
+metric_columns[2].markdown(metric_card("عدادات مؤكدة", f"{len(unique_final_rows):,}", "بعد إزالة التكرارات"), unsafe_allow_html=True)
+metric_columns[3].markdown(metric_card("تكرارات مستبعدة", f"{removed_duplicates:,}", "احتفظنا بالأقوى دلالة"), unsafe_allow_html=True)
 
 secondary_metrics = st.columns(2)
-secondary_metrics[0].metric("حالات V/I مؤكدة", f"{vi_high_count:,}")
-secondary_metrics[1].metric("سجلات غير مكتملة", f"{invalid_count:,}")
+secondary_metrics[0].markdown(metric_card("حالات V/I مؤكدة", f"{vi_high_count:,}", "قرينة فولت/تيار مباشرة"), unsafe_allow_html=True)
+secondary_metrics[1].markdown(metric_card("سجلات غير مكتملة", f"{invalid_count:,}", "لم تدخل في القرار النهائي"), unsafe_allow_html=True)
 
-st.divider()
+st.markdown(
+    f"""
+    <div class="signal-strip">
+        <div class="signal-item"><strong>{unique_vi_high_count:,}</strong>عدادات نهائية بقرينة V/I مؤكدة</div>
+        <div class="signal-item"><strong>{unique_jumper_count:,}</strong>عدادات نهائية بشبهة نصف حمل/جمبر</div>
+        <div class="signal-item"><strong>{probability_label(highest_probability)}</strong>أعلى احتمال فاقد في القائمة النهائية</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 left_column, right_column = st.columns([3, 1])
 with left_column:
-    st.subheader("النتائج النهائية")
+    st.markdown(
+        '<div class="section-title"><h3>النتائج النهائية</h3><span>المؤشر الرئيسي مميز لسهولة ترتيب الزيارات الميدانية</span></div>',
+        unsafe_allow_html=True,
+    )
 with right_column:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     st.download_button(
@@ -665,10 +742,22 @@ if display_df.empty:
     st.success("لا توجد حالات فاقد مؤكدة وفق المعايير الحالية.")
 else:
     st.dataframe(
-        display_df,
+        style_user_table(display_df),
         use_container_width=True,
         hide_index=True,
         height=560,
+        column_config={
+            "رقم العداد/الآلة": st.column_config.TextColumn(width="medium"),
+            "الأولوية": st.column_config.TextColumn(width="small"),
+            "نوع المؤشر": st.column_config.TextColumn(width="medium"),
+            "احتمال الفاقد": st.column_config.TextColumn(width="small"),
+            "المؤشر الرئيسي": st.column_config.TextColumn(width="large"),
+            "متوسط الجهد": st.column_config.TextColumn(width="small"),
+            "الجهد الاسمي": st.column_config.TextColumn(width="small"),
+            "انحراف الجهد %": st.column_config.TextColumn(width="small"),
+            "عدم اتزان الجهد %": st.column_config.TextColumn(width="small"),
+            "عدم اتزان التيار %": st.column_config.TextColumn(width="small"),
+        },
     )
 
 st.markdown(
