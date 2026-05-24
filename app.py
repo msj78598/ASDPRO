@@ -11,7 +11,7 @@ from predict_loss import engineering_review, load_model, predict_loss, read_inpu
 
 
 st.set_page_config(
-    page_title=" منصة تحليل الاحمال الكهربائية    ",
+    page_title="تحليل الفاقد المحتمل",
     layout="wide",
 )
 
@@ -55,18 +55,14 @@ st.markdown(
         .stApp {
             direction: rtl;
             text-align: right;
-            background:
-                linear-gradient(90deg, rgba(40, 87, 79, 0.045) 1px, transparent 1px),
-                linear-gradient(180deg, rgba(40, 87, 79, 0.04) 1px, transparent 1px),
-                #f3f6f7;
-            background-size: 28px 28px;
+            background: #f4f7f8;
             color: #1e2420;
         }
         html, body, [class*="css"] {
             font-family: "Segoe UI", Tahoma, Arial, sans-serif;
         }
         [data-testid="stHeader"] {
-            background: rgba(243, 246, 247, 0.88);
+            background: rgba(244, 247, 248, 0.92);
         }
         [data-testid="stToolbar"] {
             display: none;
@@ -83,13 +79,13 @@ st.markdown(
             letter-spacing: 0;
         }
         h1 {
-            font-size: 2.35rem;
+            font-size: 2.25rem;
             margin: 0 0 0.35rem 0;
-            color: #0f1f21;
+            color: #ffffff;
             font-weight: 750;
         }
         .app-subtitle {
-            color: #51605c;
+            color: #d8e7e4;
             margin: 0;
             font-size: 1.02rem;
             line-height: 1.8;
@@ -98,12 +94,12 @@ st.markdown(
             position: relative;
             overflow: hidden;
             background:
-                linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,251,250,0.96)),
-                linear-gradient(90deg, rgba(41, 113, 101, 0.08), rgba(20, 41, 47, 0.04));
-            border: 1px solid #d5e0dc;
+                radial-gradient(circle at 12% 20%, rgba(232, 169, 73, 0.22), transparent 22%),
+                linear-gradient(135deg, #0f2428 0%, #173d3a 56%, #245f55 100%);
+            border: 1px solid #143632;
             border-radius: 8px;
-            padding: 1.25rem 1.35rem;
-            box-shadow: 0 10px 26px rgba(27, 43, 40, 0.07);
+            padding: 1.45rem 1.55rem;
+            box-shadow: 0 14px 30px rgba(12, 31, 34, 0.16);
             margin-bottom: 1rem;
         }
         .hero::before {
@@ -111,8 +107,9 @@ st.markdown(
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(90deg, transparent 0 20%, rgba(46,111,100,0.08) 20% 20.15%, transparent 20.15% 100%),
-                linear-gradient(180deg, transparent 0 58%, rgba(46,111,100,0.07) 58% 58.2%, transparent 58.2% 100%);
+                linear-gradient(90deg, transparent 0 18%, rgba(255,255,255,0.08) 18% 18.12%, transparent 18.12% 100%),
+                linear-gradient(180deg, transparent 0 62%, rgba(255,255,255,0.07) 62% 62.16%, transparent 62.16% 100%);
+            opacity: 0.75;
             pointer-events: none;
         }
         .hero::after {
@@ -122,8 +119,8 @@ st.markdown(
             right: -30%;
             width: 30%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(232, 169, 73, 0.13), transparent);
-            animation: scan-line 5.5s ease-in-out infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            animation: scan-line 7s ease-in-out infinite;
             pointer-events: none;
         }
         @keyframes scan-line {
@@ -133,35 +130,39 @@ st.markdown(
         }
         .hero-inner {
             position: relative;
-            display: grid;
-            grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
-            gap: 1rem;
-            align-items: center;
+            display: flex;
+            flex-direction: column;
+            gap: 0.95rem;
         }
         .hero-panel {
-            border: 1px solid #d7e4df;
-            background: #f7fbfa;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.7rem;
+            border: 1px solid rgba(216, 231, 228, 0.22);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 8px;
-            padding: 0.85rem;
-            box-shadow: inset 4px 0 0 #e8a949;
+            padding: 0.75rem;
+            backdrop-filter: blur(6px);
         }
         .panel-row {
             display: flex;
             justify-content: space-between;
             gap: 0.8rem;
-            border-bottom: 1px solid #e0e8e4;
-            padding: 0.42rem 0;
-            color: #4e5d58;
+            border: 1px solid rgba(216, 231, 228, 0.16);
+            border-radius: 8px;
+            padding: 0.65rem 0.75rem;
+            color: #d7e7e3;
             font-size: 0.88rem;
+            background: rgba(9, 27, 30, 0.16);
         }
         .panel-row span {
             text-align: right;
         }
         .panel-row:last-child {
-            border-bottom: 0;
+            border-bottom: 1px solid rgba(216, 231, 228, 0.16);
         }
         .panel-row strong {
-            color: #173a36;
+            color: #ffffff;
             font-weight: 750;
         }
         .workflow-card {
@@ -187,9 +188,9 @@ st.markdown(
         }
         .status-pill {
             display: inline-block;
-            background: #e5f2ee;
-            color: #1f5d53;
-            border: 1px solid #bed9d1;
+            background: rgba(255,255,255,0.12);
+            color: #ffffff;
+            border: 1px solid rgba(255,255,255,0.22);
             border-radius: 999px;
             padding: 0.25rem 0.65rem;
             font-size: 0.82rem;
@@ -219,7 +220,7 @@ st.markdown(
         .metric-card::before {
             content: "";
             position: absolute;
-            inset: 0 auto 0 0;
+            inset: 0 0 0 auto;
             width: 4px;
             background: #2e6f64;
         }
@@ -257,6 +258,7 @@ st.markdown(
             border: 1px dashed #b7c6bf;
             border-radius: 8px;
             padding: 0.7rem;
+            margin-top: 0.1rem;
         }
         [data-testid="stFileUploaderDropzone"] {
             min-height: 5.2rem;
@@ -338,8 +340,13 @@ st.markdown(
             font-size: 0.96rem;
             margin-bottom: 0.25rem;
         }
+        [data-testid="stExpander"] {
+            background: rgba(255,255,255,0.82);
+            border: 1px solid #d7e0dc;
+            border-radius: 8px;
+        }
         @media (max-width: 860px) {
-            .hero-inner {
+            .hero-panel {
                 grid-template-columns: 1fr;
             }
             .signal-strip {
@@ -608,19 +615,22 @@ st.markdown(
     <div class="hero">
         <div class="hero-inner">
             <div>
-            
-                <h1>منصة تحليل الاحمال الكهربائية لكشف حالات الفاقد المحتملة  </h1>
+                <div class="status-pill">تحليل عالي الثقة</div>
+                <h1>تحليل الفاقد المحتمل</h1>
                 <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
             </div>
             <div class="hero-panel">
-                
-         
+                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
+                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
+                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+            </div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-upload_column, template_column = st.columns([1.45, 1], gap="large")
+upload_column, template_column = st.columns([1.15, 0.85], gap="large")
 with upload_column:
     st.markdown(
         """
