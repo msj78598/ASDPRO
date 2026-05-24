@@ -54,50 +54,103 @@ st.markdown(
         .stApp {
             direction: rtl;
             text-align: right;
-            background: #f5f7f6;
+            background:
+                linear-gradient(90deg, rgba(40, 87, 79, 0.045) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(40, 87, 79, 0.04) 1px, transparent 1px),
+                #f3f6f7;
+            background-size: 28px 28px;
             color: #1e2420;
+        }
+        [data-testid="stHeader"] {
+            background: rgba(243, 246, 247, 0.88);
+        }
+        [data-testid="stToolbar"] {
+            display: none;
         }
         [data-testid="stSidebar"] {
             display: none;
         }
         .block-container {
-            padding-top: 1.1rem;
+            padding-top: 0.75rem;
             padding-bottom: 2rem;
-            max-width: 1180px;
+            max-width: 1220px;
         }
         h1, h2, h3 {
             letter-spacing: 0;
         }
         h1 {
-            font-size: 2.15rem;
-            margin-bottom: 0.2rem;
-            color: #15211e;
+            font-size: 2.35rem;
+            margin: 0 0 0.35rem 0;
+            color: #0f1f21;
             font-weight: 750;
         }
         .app-subtitle {
-            color: #59645f;
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
+            color: #51605c;
+            margin: 0;
+            font-size: 1.02rem;
             line-height: 1.8;
         }
         .hero {
-            background: #ffffff;
-            border: 1px solid #dbe3dd;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,251,250,0.96)),
+                linear-gradient(90deg, rgba(41, 113, 101, 0.08), rgba(20, 41, 47, 0.04));
+            border: 1px solid #d5e0dc;
             border-radius: 8px;
-            padding: 1.05rem 1.15rem;
-            box-shadow: 0 1px 3px rgba(30, 36, 32, 0.05);
-            margin-bottom: 0.9rem;
+            padding: 1.25rem 1.35rem;
+            box-shadow: 0 10px 26px rgba(27, 43, 40, 0.07);
+            margin-bottom: 1rem;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, transparent 0 20%, rgba(46,111,100,0.08) 20% 20.15%, transparent 20.15% 100%),
+                linear-gradient(180deg, transparent 0 58%, rgba(46,111,100,0.07) 58% 58.2%, transparent 58.2% 100%);
+            pointer-events: none;
+        }
+        .hero-inner {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
+            gap: 1rem;
+            align-items: center;
+        }
+        .hero-panel {
+            border: 1px solid #d7e4df;
+            background: #f7fbfa;
+            border-radius: 8px;
+            padding: 0.85rem;
+        }
+        .panel-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            border-bottom: 1px solid #e0e8e4;
+            padding: 0.42rem 0;
+            color: #4e5d58;
+            font-size: 0.88rem;
+        }
+        .panel-row:last-child {
+            border-bottom: 0;
+        }
+        .panel-row strong {
+            color: #173a36;
+            font-weight: 750;
         }
         .workflow-card {
-            background: #ffffff;
-            border: 1px solid #dbe3dd;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #d5e0dc;
             border-radius: 8px;
-            padding: 0.85rem 0.95rem;
-            min-height: 4.2rem;
-            margin-bottom: 0.55rem;
+            padding: 0.9rem 1rem;
+            min-height: 5rem;
+            margin: 0 0 0.55rem 0;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
         }
         .workflow-title {
-            color: #31433d;
+            color: #203b37;
             font-weight: 700;
             font-size: 0.95rem;
             margin-bottom: 0.45rem;
@@ -110,9 +163,9 @@ st.markdown(
         }
         .status-pill {
             display: inline-block;
-            background: #e8f0ec;
-            color: #28574f;
-            border: 1px solid #cdded6;
+            background: #e5f2ee;
+            color: #1f5d53;
+            border: 1px solid #bed9d1;
             border-radius: 999px;
             padding: 0.25rem 0.65rem;
             font-size: 0.82rem;
@@ -121,16 +174,17 @@ st.markdown(
         }
         [data-testid="stMetric"] {
             background: #ffffff;
-            border: 1px solid #dde4de;
+            border: 1px solid #d7e0dc;
             border-radius: 8px;
-            padding: 0.85rem 0.95rem;
-            box-shadow: 0 1px 2px rgba(30, 36, 32, 0.05);
+            padding: 0.9rem 1rem;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
         }
         [data-testid="stMetricLabel"] {
             color: #53605a;
         }
         [data-testid="stMetricValue"] {
-            color: #16362f;
+            color: #123d39;
+            font-weight: 750;
         }
         .stDownloadButton > button {
             border-radius: 8px;
@@ -151,10 +205,23 @@ st.markdown(
             border-radius: 8px;
             padding: 0.7rem;
         }
+        [data-testid="stFileUploaderDropzone"] {
+            min-height: 5.2rem;
+            border-radius: 8px;
+            background: #eef3f1;
+        }
+        [data-testid="stFileUploaderDropzone"] svg {
+            width: 1.45rem;
+            height: 1.45rem;
+        }
+        [data-testid="stFileUploaderDropzone"] button {
+            border-radius: 8px;
+        }
         [data-testid="stDataFrame"] {
-            border: 1px solid #dde4de;
+            border: 1px solid #d7e0dc;
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
         }
         .stAlert {
             border-radius: 8px;
@@ -166,6 +233,27 @@ st.markdown(
             margin-top: 1.4rem;
             padding-top: 0.9rem;
             text-align: center;
+        }
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.2rem 0 0.6rem 0;
+        }
+        .section-title h3 {
+            margin: 0;
+            color: #1f312e;
+            font-size: 1.15rem;
+        }
+        .section-title span {
+            color: #687670;
+            font-size: 0.88rem;
+        }
+        @media (max-width: 860px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     """,
