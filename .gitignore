@@ -1,0 +1,15 @@
+.conda/
+__pycache__/
+*.py[cod]
+*.log
+
+# Input, training, and generated data
+*.xlsx
+*.xls
+*.csv
+results/
+train_models.py
+
+# Keep the serving model, ignore duplicate or future local model experiments
+models/*
+!models/random_forest_best.joblib
