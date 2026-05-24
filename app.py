@@ -484,7 +484,7 @@ else:
         hide_index=True,
         height=560,
 
-        st.markdown("---")
+st.markdown("---")
 st.markdown(
     "<p style='font-size:12px;color:#777;'>👨‍💻 تطوير: مشهور العباس 2026 | 00966553339838</p>",
     unsafe_allow_html=True,
