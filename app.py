@@ -70,6 +70,42 @@ st.markdown(
         [data-testid="stSidebar"] {
             display: none;
         }
+
+        /* RTL fix for Arabic UI */
+        html, body, .stApp, [data-testid="stAppViewContainer"], [data-testid="stMarkdownContainer"] {
+            direction: rtl;
+            text-align: right;
+        }
+        .hero, .hero * {
+            direction: rtl;
+            text-align: right;
+            unicode-bidi: plaintext;
+        }
+        .hero-inner {
+            align-items: stretch;
+        }
+        .hero-inner > div {
+            width: 100%;
+        }
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+        }
+        .hero-panel {
+            direction: rtl;
+        }
+        .panel-row {
+            direction: rtl;
+            text-align: right;
+        }
+        .panel-row span, .panel-row strong {
+            direction: rtl;
+            text-align: right;
+        }
+        .stDataFrame, [data-testid="stDataFrame"] {
+            direction: rtl;
+        }
         .block-container {
             padding-top: 0.75rem;
             padding-bottom: 2rem;
@@ -612,8 +648,8 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
 
 st.markdown(
     """
-    <div class="hero">
-        <div class="hero-inner">
+    <div class="hero" dir="rtl">
+        <div class="hero-inner" dir="rtl">
             <div>
                 <div class="status-pill">تحليل عالي الثقة</div>
                 <h1>تحليل الفاقد المحتمل</h1>
