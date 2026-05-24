@@ -188,16 +188,17 @@ st.markdown(
             text-align: right;
         }
 
-        .hero-title {
+.hero-title {
     margin: 0 0 8px;
-    color: #ffffff;
-    font-size: 32px;
+    color: #f8fffc !important;
+    font-size: 34px;
     line-height: 1.35;
-    font-weight: 800;
+    font-weight: 900;
     text-align: right;
     direction: rtl;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
-        }
+    opacity: 1 !important;
+    text-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+}
 
         .hero-title::after {
             content: "";
