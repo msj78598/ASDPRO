@@ -190,7 +190,7 @@ st.markdown(
 
         .hero-title {
     margin: 0 0 8px;
-    color: #f4fbf8;
+    color: #ffffff;
     font-size: 32px;
     line-height: 1.35;
     font-weight: 800;
