@@ -189,13 +189,14 @@ st.markdown(
         }
 
         .hero-title {
-            margin: 0 0 8px;
-            color: #ffffff;
-            font-size: 30px;
-            line-height: 1.35;
-            font-weight: 800;
-            text-align: right;
-            direction: rtl;
+    margin: 0 0 8px;
+    color: #f4fbf8;
+    font-size: 32px;
+    line-height: 1.35;
+    font-weight: 800;
+    text-align: right;
+    direction: rtl;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
         }
 
         .hero-title::after {
