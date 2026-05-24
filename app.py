@@ -11,7 +11,7 @@ from predict_loss import engineering_review, load_model, predict_loss, read_inpu
 
 
 st.set_page_config(
-    page_title=" منصة تحليل الاحمال الكهربائية لكشف حالات الفاقد المحتملة",
+    page_title=" منصة تحليل الاحمال الكهربائية    ",
     layout="wide",
 )
 
@@ -608,8 +608,8 @@ st.markdown(
     <div class="hero">
         <div class="hero-inner">
             <div>
-                <div class="status-pill">تحليل عالي الثقة</div>
-                <h1>تحليل الفاقد المحتمل</h1>
+            
+                <h1>منصة تحليل الاحمال الكهربائية لكشف حالات الفاقد المحتملة  </h1>
                 <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
             </div>
             <div class="hero-panel">
