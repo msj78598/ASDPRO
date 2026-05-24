@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from io import BytesIO
 
 import pandas as pd
 import streamlit as st
@@ -186,6 +187,64 @@ def get_model():
     return load_model()
 
 
+INPUT_COLUMNS = [
+    ("Meter Number", "رقم العداد أو معرف الآلة", "MMF202080000001"),
+    ("V1", "جهد الفاز الأول", 230.0),
+    ("V2", "جهد الفاز الثاني", 229.5),
+    ("V3", "جهد الفاز الثالث", 231.0),
+    ("A1", "تيار الفاز الأول", 12.4),
+    ("A2", "تيار الفاز الثاني", 11.9),
+    ("A3", "تيار الفاز الثالث", 12.1),
+]
+
+
+def build_input_template() -> bytes:
+    example_data = pd.DataFrame(
+        [
+            {
+                "Meter Number": "METER-001",
+                "V1": 230.0,
+                "V2": 229.5,
+                "V3": 231.0,
+                "A1": 12.4,
+                "A2": 11.9,
+                "A3": 12.1,
+            },
+            {
+                "Meter Number": "METER-002",
+                "V1": 127.0,
+                "V2": 126.5,
+                "V3": 127.4,
+                "A1": 4.2,
+                "A2": 4.0,
+                "A3": 0.1,
+            },
+        ]
+    )
+    columns_info = pd.DataFrame(
+        [
+            {"Column": column, "Description": description, "Example": example}
+            for column, description, example in INPUT_COLUMNS
+        ]
+    )
+
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        example_data.to_excel(writer, index=False, sheet_name="Data")
+        columns_info.to_excel(writer, index=False, sheet_name="Columns Guide")
+
+    return output.getvalue()
+
+
+def required_columns_table() -> pd.DataFrame:
+    return pd.DataFrame(
+        [
+            {"العمود": column, "الوصف": description, "مثال": str(example)}
+            for column, description, example in INPUT_COLUMNS
+        ]
+    )
+
+
 st.title("تحليل الفاقد المحتمل")
 st.markdown(
     "<div class='app-subtitle'>رفع بيانات القراءات، تشغيل النموذج المدرب، ثم تمرير الحالات المشتبه بها على مراجعة فنية قابلة للضبط.</div>",
@@ -225,6 +284,15 @@ with st.sidebar:
     view_mode = st.radio(
         "العرض",
         ["النتيجة النهائية", "اشتباه النموذج قبل اللجنة", "الحالات المستبعدة فنيا", "كل النتائج"],
+    )
+
+with st.expander("نموذج البيانات المطلوبة", expanded=True):
+    st.dataframe(required_columns_table(), use_container_width=True, hide_index=True)
+    st.download_button(
+        "تحميل نموذج Excel",
+        data=build_input_template(),
+        file_name="meter_input_template.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
 
 uploaded_file = st.file_uploader(
