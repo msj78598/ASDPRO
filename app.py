@@ -389,6 +389,246 @@ st.markdown(
                 grid-template-columns: 1fr;
             }
         }
+
+
+        /* ===== Professional RTL hero fixes ===== */
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+
+        html,
+        body,
+        .stApp,
+        [data-testid="stAppViewContainer"],
+        [data-testid="stMarkdownContainer"] {
+            direction: rtl;
+            text-align: right;
+        }
+
+        html,
+        body,
+        [class*="css"] {
+            font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif !important;
+        }
+
+        .block-container {
+            padding-top: 1.8rem !important;
+            padding-bottom: 2rem;
+            max-width: 1280px !important;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            direction: rtl;
+            text-align: right;
+            background:
+                radial-gradient(circle at 15% 22%, rgba(232, 169, 73, 0.18), transparent 22%),
+                linear-gradient(135deg, #0b2327 0%, #123c3a 52%, #26685b 100%) !important;
+            border: 1px solid rgba(20, 54, 50, 0.85) !important;
+            border-radius: 20px !important;
+            padding: 2.2rem 2.2rem 1.9rem 2.2rem !important;
+            box-shadow: 0 18px 40px rgba(10, 28, 31, 0.16) !important;
+            margin-top: 0.65rem !important;
+            margin-bottom: 1.2rem !important;
+            min-height: 300px;
+        }
+
+        .hero,
+        .hero * {
+            direction: rtl;
+            unicode-bidi: plaintext;
+            box-sizing: border-box;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, transparent 0 18%, rgba(255,255,255,0.05) 18% 18.1%, transparent 18.1% 100%),
+                linear-gradient(180deg, transparent 0 58%, rgba(255,255,255,0.05) 58% 58.1%, transparent 58.1% 100%) !important;
+            opacity: 1 !important;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -35%;
+            width: 32%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent) !important;
+            animation: scan-line 8s ease-in-out infinite !important;
+            pointer-events: none;
+        }
+
+        @keyframes scan-line {
+            0%, 35% { right: -35%; opacity: 0; }
+            50%, 70% { opacity: 1; }
+            100% { right: 110%; opacity: 0; }
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 1.25rem !important;
+            width: 100%;
+            text-align: right;
+        }
+
+        .hero-top-badge {
+            align-self: flex-start;
+            margin-right: auto;
+            margin-left: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: fit-content;
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #f8fcfb;
+            border-radius: 999px;
+            padding: 0.55rem 0.95rem;
+            font-size: 0.92rem;
+            font-weight: 700;
+            line-height: 1;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+        }
+
+        .hero-top-badge-icon {
+            width: 0.82rem;
+            height: 0.82rem;
+            border-radius: 50%;
+            background: #f2b24b;
+            box-shadow: 0 0 0 6px rgba(242, 178, 75, 0.15);
+            flex-shrink: 0;
+        }
+
+        .hero-content {
+            max-width: 920px;
+            margin-right: auto;
+            text-align: right;
+        }
+
+        .hero-title {
+            margin: 0 0 0.7rem 0 !important;
+            color: #f6fbfa !important;
+            font-family: "Cairo", "Segoe UI", Tahoma, Arial, sans-serif !important;
+            font-size: 3.15rem !important;
+            line-height: 1.18 !important;
+            font-weight: 800 !important;
+            text-align: right !important;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            letter-spacing: -0.03rem;
+        }
+
+        .hero-title::after {
+            content: "";
+            display: block;
+            width: 115px;
+            height: 4px;
+            margin-top: 0.7rem;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #f0b24f, rgba(240,178,79,0.10));
+        }
+
+        .app-subtitle {
+            color: #dce9e6 !important;
+            margin: 0 !important;
+            font-size: 1.08rem !important;
+            line-height: 1.95 !important;
+            max-width: 920px;
+            text-align: right !important;
+            font-weight: 600;
+        }
+
+        .hero-panel {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 0.85rem !important;
+            border: 1px solid rgba(216, 231, 228, 0.18) !important;
+            background: rgba(255, 255, 255, 0.07) !important;
+            border-radius: 16px !important;
+            padding: 1rem !important;
+            backdrop-filter: blur(8px);
+            width: 100%;
+        }
+
+        .panel-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 0.8rem !important;
+            border: 1px solid rgba(216, 231, 228, 0.14) !important;
+            border-radius: 14px !important;
+            padding: 0.9rem 1rem !important;
+            color: #dbe8e5 !important;
+            font-size: 0.92rem !important;
+            background: rgba(7, 24, 28, 0.16) !important;
+            min-height: 72px;
+            text-align: right !important;
+        }
+
+        .panel-row span {
+            color: #d7e6e2;
+            font-weight: 600;
+            text-align: right !important;
+        }
+
+        .panel-row strong {
+            color: #ffffff !important;
+            font-weight: 800 !important;
+            font-size: 1rem;
+            text-align: right !important;
+        }
+
+        .workflow-card,
+        .metric-card,
+        .results-shell,
+        [data-testid="stExpander"] {
+            border-radius: 14px !important;
+        }
+
+        .stDownloadButton > button,
+        [data-testid="stFileUploader"],
+        [data-testid="stFileUploaderDropzone"],
+        [data-testid="stFileUploaderFile"],
+        [data-testid="stDataFrame"] {
+            border-radius: 14px !important;
+        }
+
+        @media (max-width: 860px) {
+            .block-container {
+                padding-top: 1rem !important;
+            }
+
+            .hero {
+                padding: 1.4rem 1rem 1.2rem 1rem !important;
+                min-height: auto;
+            }
+
+            .hero-title {
+                font-size: 2.15rem !important;
+            }
+
+            .app-subtitle {
+                font-size: 0.98rem !important;
+            }
+
+            .hero-panel {
+                grid-template-columns: 1fr !important;
+            }
+
+            .panel-row {
+                min-height: auto;
+            }
+        }
+
     </style>
     """,
     unsafe_allow_html=True,
@@ -650,15 +890,32 @@ st.markdown(
     """
     <div class="hero" dir="rtl">
         <div class="hero-inner" dir="rtl">
-            <div>
-                <div class="status-pill">تحليل عالي الثقة</div>
-                <h1>تحليل الفاقد المحتمل</h1>
-                <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+            <div class="hero-top-badge">
+                <span class="hero-top-badge-icon"></span>
+                <span>تحليل عالي الثقة</span>
             </div>
+
+            <div class="hero-content">
+                <h1 class="hero-title">تحليل الفاقد المحتمل</h1>
+                <div class="app-subtitle">
+                    منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة،
+                    مع اختيار أقوى قراءة لكل عداد.
+                </div>
+            </div>
+
             <div class="hero-panel">
-                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
-                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
-                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+                <div class="panel-row">
+                    <span>محرك التحليل</span>
+                    <strong>AI + V/I Rules</strong>
+                </div>
+                <div class="panel-row">
+                    <span>سياسة الإخراج</span>
+                    <strong>حالات مؤكدة فقط</strong>
+                </div>
+                <div class="panel-row">
+                    <span>التكرارات</span>
+                    <strong>أقوى قراءة لكل عداد</strong>
+                </div>
             </div>
         </div>
     </div>
