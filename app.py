@@ -613,9 +613,7 @@ st.markdown(
                 <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
             </div>
             <div class="hero-panel">
-                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
-                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
-                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+                
             </div>
         </div>
     </div>
