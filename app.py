@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from html import escape
 from io import BytesIO
 
 import pandas as pd
@@ -54,50 +55,126 @@ st.markdown(
         .stApp {
             direction: rtl;
             text-align: right;
-            background: #f5f7f6;
+            background:
+                linear-gradient(90deg, rgba(40, 87, 79, 0.045) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(40, 87, 79, 0.04) 1px, transparent 1px),
+                #f3f6f7;
+            background-size: 28px 28px;
             color: #1e2420;
+        }
+        html, body, [class*="css"] {
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        }
+        [data-testid="stHeader"] {
+            background: rgba(243, 246, 247, 0.88);
+        }
+        [data-testid="stToolbar"] {
+            display: none;
         }
         [data-testid="stSidebar"] {
             display: none;
         }
         .block-container {
-            padding-top: 1.1rem;
+            padding-top: 0.75rem;
             padding-bottom: 2rem;
-            max-width: 1180px;
+            max-width: 1220px;
         }
         h1, h2, h3 {
             letter-spacing: 0;
         }
         h1 {
-            font-size: 2.15rem;
-            margin-bottom: 0.2rem;
-            color: #15211e;
+            font-size: 2.35rem;
+            margin: 0 0 0.35rem 0;
+            color: #0f1f21;
             font-weight: 750;
         }
         .app-subtitle {
-            color: #59645f;
-            margin-bottom: 0.8rem;
-            font-size: 1rem;
+            color: #51605c;
+            margin: 0;
+            font-size: 1.02rem;
             line-height: 1.8;
         }
         .hero {
-            background: #ffffff;
-            border: 1px solid #dbe3dd;
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.98), rgba(248,251,250,0.96)),
+                linear-gradient(90deg, rgba(41, 113, 101, 0.08), rgba(20, 41, 47, 0.04));
+            border: 1px solid #d5e0dc;
             border-radius: 8px;
-            padding: 1.05rem 1.15rem;
-            box-shadow: 0 1px 3px rgba(30, 36, 32, 0.05);
-            margin-bottom: 0.9rem;
+            padding: 1.25rem 1.35rem;
+            box-shadow: 0 10px 26px rgba(27, 43, 40, 0.07);
+            margin-bottom: 1rem;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, transparent 0 20%, rgba(46,111,100,0.08) 20% 20.15%, transparent 20.15% 100%),
+                linear-gradient(180deg, transparent 0 58%, rgba(46,111,100,0.07) 58% 58.2%, transparent 58.2% 100%);
+            pointer-events: none;
+        }
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -30%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 169, 73, 0.13), transparent);
+            animation: scan-line 5.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes scan-line {
+            0%, 30% { right: -32%; opacity: 0; }
+            45%, 70% { opacity: 1; }
+            100% { right: 102%; opacity: 0; }
+        }
+        .hero-inner {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
+            gap: 1rem;
+            align-items: center;
+        }
+        .hero-panel {
+            border: 1px solid #d7e4df;
+            background: #f7fbfa;
+            border-radius: 8px;
+            padding: 0.85rem;
+            box-shadow: inset 4px 0 0 #e8a949;
+        }
+        .panel-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 0.8rem;
+            border-bottom: 1px solid #e0e8e4;
+            padding: 0.42rem 0;
+            color: #4e5d58;
+            font-size: 0.88rem;
+        }
+        .panel-row span {
+            text-align: right;
+        }
+        .panel-row:last-child {
+            border-bottom: 0;
+        }
+        .panel-row strong {
+            color: #173a36;
+            font-weight: 750;
         }
         .workflow-card {
-            background: #ffffff;
-            border: 1px solid #dbe3dd;
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #d5e0dc;
             border-radius: 8px;
-            padding: 0.85rem 0.95rem;
-            min-height: 4.2rem;
-            margin-bottom: 0.55rem;
+            padding: 0.9rem 1rem;
+            min-height: 5rem;
+            margin: 0 0 0.55rem 0;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
         }
         .workflow-title {
-            color: #31433d;
+            color: #203b37;
             font-weight: 700;
             font-size: 0.95rem;
             margin-bottom: 0.45rem;
@@ -110,27 +187,57 @@ st.markdown(
         }
         .status-pill {
             display: inline-block;
-            background: #e8f0ec;
-            color: #28574f;
-            border: 1px solid #cdded6;
+            background: #e5f2ee;
+            color: #1f5d53;
+            border: 1px solid #bed9d1;
             border-radius: 999px;
             padding: 0.25rem 0.65rem;
             font-size: 0.82rem;
             font-weight: 700;
             margin-bottom: 0.55rem;
         }
-        [data-testid="stMetric"] {
+        .status-pill::before {
+            content: "";
+            display: inline-block;
+            width: 0.45rem;
+            height: 0.45rem;
+            margin-left: 0.45rem;
+            border-radius: 999px;
+            background: #e8a949;
+            box-shadow: 0 0 0 4px rgba(232, 169, 73, 0.16);
+        }
+        .metric-card {
             background: #ffffff;
-            border: 1px solid #dde4de;
+            border: 1px solid #d7e0dc;
             border-radius: 8px;
-            padding: 0.85rem 0.95rem;
-            box-shadow: 0 1px 2px rgba(30, 36, 32, 0.05);
+            padding: 1rem 1.05rem;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
+            min-height: 7.1rem;
+            position: relative;
+            overflow: hidden;
         }
-        [data-testid="stMetricLabel"] {
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: #2e6f64;
+        }
+        .metric-label {
             color: #53605a;
+            font-size: 0.88rem;
+            margin-bottom: 0.55rem;
         }
-        [data-testid="stMetricValue"] {
-            color: #16362f;
+        .metric-value {
+            color: #123d39;
+            font-weight: 750;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
+        .metric-note {
+            color: #7a8581;
+            font-size: 0.78rem;
+            margin-top: 0.5rem;
         }
         .stDownloadButton > button {
             border-radius: 8px;
@@ -151,10 +258,31 @@ st.markdown(
             border-radius: 8px;
             padding: 0.7rem;
         }
+        [data-testid="stFileUploaderDropzone"] {
+            min-height: 5.2rem;
+            border-radius: 8px;
+            background: #eef3f1;
+            direction: rtl;
+            padding: 1rem;
+        }
+        [data-testid="stFileUploaderDropzone"] svg {
+            width: 1.15rem;
+            height: 1.15rem;
+        }
+        [data-testid="stFileUploaderDropzone"] button {
+            border-radius: 8px;
+        }
+        [data-testid="stFileUploaderFile"] {
+            direction: rtl;
+            background: #ffffff;
+            border: 1px solid #d7e0dc;
+            border-radius: 8px;
+        }
         [data-testid="stDataFrame"] {
-            border: 1px solid #dde4de;
+            border: 1px solid #d7e0dc;
             border-radius: 8px;
             overflow: hidden;
+            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
         }
         .stAlert {
             border-radius: 8px;
@@ -166,6 +294,57 @@ st.markdown(
             margin-top: 1.4rem;
             padding-top: 0.9rem;
             text-align: center;
+        }
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin: 0.2rem 0 0.6rem 0;
+        }
+        .section-title h3 {
+            margin: 0;
+            color: #1f312e;
+            font-size: 1.15rem;
+        }
+        .section-title span {
+            color: #687670;
+            font-size: 0.88rem;
+        }
+        .results-shell {
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #d7e0dc;
+            border-radius: 8px;
+            padding: 0.95rem;
+            box-shadow: 0 8px 24px rgba(27, 43, 40, 0.055);
+        }
+        .signal-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.7rem;
+            margin: 0.35rem 0 0.85rem 0;
+        }
+        .signal-item {
+            background: #f7fbfa;
+            border: 1px solid #dbe7e2;
+            border-radius: 8px;
+            padding: 0.75rem 0.85rem;
+            color: #52615c;
+            font-size: 0.86rem;
+        }
+        .signal-item strong {
+            display: block;
+            color: #173a36;
+            font-size: 0.96rem;
+            margin-bottom: 0.25rem;
+        }
+        @media (max-width: 860px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .signal-strip {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
     """,
@@ -229,6 +408,14 @@ def probability_label(value: float) -> str:
     if pd.isna(value):
         return "قرينة فنية مباشرة"
     return f"{value:.1%}"
+
+
+def priority_label(row: pd.Series) -> str:
+    if str(row.get("VIExpertSeverity", "")) == "High":
+        return "حرجة"
+    if bool(row.get("LikelyHalfLoadJumper", False)):
+        return "عالية"
+    return "عالية"
 
 
 def choose_indicator(row: pd.Series) -> str:
@@ -298,6 +485,7 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
     if display.empty:
         return display
 
+    display["الأولوية"] = display.apply(priority_label, axis=1)
     display["نوع المؤشر"] = display.apply(evidence_category, axis=1)
     display["المؤشر الرئيسي"] = display.apply(choose_indicator, axis=1)
     display["احتمال الفاقد"] = display["LossProbability"].map(probability_label)
@@ -321,6 +509,7 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
 
     columns = [
         "Meter Number",
+        "الأولوية",
         "نوع المؤشر",
         "احتمال الفاقد",
         "المؤشر الرئيسي",
@@ -339,6 +528,32 @@ def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
     columns = [column for column in columns if column in display.columns]
 
     return display[columns].rename(columns={"Meter Number": "رقم العداد/الآلة"})
+
+
+def style_user_table(display: pd.DataFrame):
+    def style_row(row: pd.Series) -> list[str]:
+        marker_columns = {"الأولوية", "نوع المؤشر", "المؤشر الرئيسي", "احتمال الفاقد"}
+        if row.get("الأولوية") == "حرجة":
+            color = "background-color: #fff4e0; color: #4b2f08; font-weight: 700;"
+        elif "جمبر" in str(row.get("نوع المؤشر", "")):
+            color = "background-color: #eef7f5; color: #143f39; font-weight: 700;"
+        else:
+            color = "background-color: #f4f8fb; color: #18343a; font-weight: 700;"
+
+        return [color if column in marker_columns else "" for column in row.index]
+
+    return display.style.apply(style_row, axis=1)
+
+
+def metric_card(label: str, value: str, note: str = "") -> str:
+    note_html = f'<div class="metric-note">{escape(note)}</div>' if note else ""
+    return f"""
+    <div class="metric-card">
+        <div class="metric-label">{escape(label)}</div>
+        <div class="metric-value">{escape(value)}</div>
+        {note_html}
+    </div>
+    """
 
 
 def build_user_excel(unique_results: pd.DataFrame, all_results: pd.DataFrame) -> bytes:
@@ -391,9 +606,18 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
 st.markdown(
     """
     <div class="hero">
-        <div class="status-pill">تحليل عالي الثقة</div>
-        <h1>تحليل الفاقد المحتمل</h1>
-        <div class="app-subtitle">قائمة نهائية مختصرة بالعدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+        <div class="hero-inner">
+            <div>
+                <div class="status-pill">تحليل عالي الثقة</div>
+                <h1>تحليل الفاقد المحتمل</h1>
+                <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+            </div>
+            <div class="hero-panel">
+                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
+                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
+                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+            </div>
+        </div>
     </div>
     """,
     unsafe_allow_html=True,
@@ -455,22 +679,53 @@ removed_duplicates = max(len(final_rows) - len(unique_final_rows), 0)
 analyzed_count = int((results_df["AnalysisStatus"] == "Analyzed").sum())
 invalid_count = int((results_df["AnalysisStatus"] != "Analyzed").sum())
 vi_high_count = int((results_df["VIExpertSeverity"] == "High").sum()) if "VIExpertSeverity" in results_df.columns else 0
+unique_vi_high_count = (
+    int((unique_final_rows["VIExpertSeverity"] == "High").sum())
+    if "VIExpertSeverity" in unique_final_rows.columns
+    else 0
+)
+unique_jumper_count = (
+    int(unique_final_rows["LikelyHalfLoadJumper"].sum())
+    if "LikelyHalfLoadJumper" in unique_final_rows.columns
+    else 0
+)
+highest_probability = (
+    unique_final_rows["LossProbability"].max()
+    if "LossProbability" in unique_final_rows.columns and not unique_final_rows.empty
+    else pd.NA
+)
 
+st.markdown(
+    '<div class="section-title"><h3>ملخص التشغيل</h3><span>تم تطبيق المعايير الفنية داخليًا قبل عرض القائمة النهائية</span></div>',
+    unsafe_allow_html=True,
+)
 metric_columns = st.columns(4)
-metric_columns[0].metric("إجمالي السجلات", f"{len(results_df):,}")
-metric_columns[1].metric("تم تحليلها", f"{analyzed_count:,}")
-metric_columns[2].metric("عدادات مؤكدة", f"{len(unique_final_rows):,}")
-metric_columns[3].metric("تكرارات مستبعدة", f"{removed_duplicates:,}")
+metric_columns[0].markdown(metric_card("إجمالي السجلات", f"{len(results_df):,}", "عدد القراءات المستلمة"), unsafe_allow_html=True)
+metric_columns[1].markdown(metric_card("تم تحليلها", f"{analyzed_count:,}", "سجلات مكتملة وصالحة"), unsafe_allow_html=True)
+metric_columns[2].markdown(metric_card("عدادات مؤكدة", f"{len(unique_final_rows):,}", "بعد إزالة التكرارات"), unsafe_allow_html=True)
+metric_columns[3].markdown(metric_card("تكرارات مستبعدة", f"{removed_duplicates:,}", "احتفظنا بالأقوى دلالة"), unsafe_allow_html=True)
 
 secondary_metrics = st.columns(2)
-secondary_metrics[0].metric("حالات V/I مؤكدة", f"{vi_high_count:,}")
-secondary_metrics[1].metric("سجلات غير مكتملة", f"{invalid_count:,}")
+secondary_metrics[0].markdown(metric_card("حالات V/I مؤكدة", f"{vi_high_count:,}", "قرينة فولت/تيار مباشرة"), unsafe_allow_html=True)
+secondary_metrics[1].markdown(metric_card("سجلات غير مكتملة", f"{invalid_count:,}", "لم تدخل في القرار النهائي"), unsafe_allow_html=True)
 
-st.divider()
+st.markdown(
+    f"""
+    <div class="signal-strip">
+        <div class="signal-item"><strong>{unique_vi_high_count:,}</strong>عدادات نهائية بقرينة V/I مؤكدة</div>
+        <div class="signal-item"><strong>{unique_jumper_count:,}</strong>عدادات نهائية بشبهة نصف حمل/جمبر</div>
+        <div class="signal-item"><strong>{probability_label(highest_probability)}</strong>أعلى احتمال فاقد في القائمة النهائية</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 left_column, right_column = st.columns([3, 1])
 with left_column:
-    st.subheader("النتائج النهائية")
+    st.markdown(
+        '<div class="section-title"><h3>النتائج النهائية</h3><span>المؤشر الرئيسي مميز لسهولة ترتيب الزيارات الميدانية</span></div>',
+        unsafe_allow_html=True,
+    )
 with right_column:
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     st.download_button(
@@ -487,10 +742,22 @@ if display_df.empty:
     st.success("لا توجد حالات فاقد مؤكدة وفق المعايير الحالية.")
 else:
     st.dataframe(
-        display_df,
+        style_user_table(display_df),
         use_container_width=True,
         hide_index=True,
         height=560,
+        column_config={
+            "رقم العداد/الآلة": st.column_config.TextColumn(width="medium"),
+            "الأولوية": st.column_config.TextColumn(width="small"),
+            "نوع المؤشر": st.column_config.TextColumn(width="medium"),
+            "احتمال الفاقد": st.column_config.TextColumn(width="small"),
+            "المؤشر الرئيسي": st.column_config.TextColumn(width="large"),
+            "متوسط الجهد": st.column_config.TextColumn(width="small"),
+            "الجهد الاسمي": st.column_config.TextColumn(width="small"),
+            "انحراف الجهد %": st.column_config.TextColumn(width="small"),
+            "عدم اتزان الجهد %": st.column_config.TextColumn(width="small"),
+            "عدم اتزان التيار %": st.column_config.TextColumn(width="small"),
+        },
     )
 
 st.markdown(
