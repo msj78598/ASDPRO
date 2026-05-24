@@ -614,8 +614,7 @@ st.markdown(
             </div>
             <div class="hero-panel">
                 
-            </div>
-        </div>
+         
     </div>
     """,
     unsafe_allow_html=True,
