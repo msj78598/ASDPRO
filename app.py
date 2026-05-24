@@ -159,6 +159,14 @@ st.markdown(
         .stAlert {
             border-radius: 8px;
         }
+        .app-footer {
+            color: #6b7772;
+            border-top: 1px solid #dbe3dd;
+            font-size: 0.85rem;
+            margin-top: 1.4rem;
+            padding-top: 0.9rem;
+            text-align: center;
+        }
     </style>
     """,
     unsafe_allow_html=True,
@@ -484,3 +492,8 @@ else:
         hide_index=True,
         height=560,
     )
+
+st.markdown(
+    '<div class="app-footer">تطوير: مشهور العباس 2026 | 00966553339838</div>',
+    unsafe_allow_html=True,
+)
