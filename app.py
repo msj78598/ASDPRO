@@ -137,15 +137,29 @@ st.markdown(
             display: grid;
             gap: 18px;
             width: 100%;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .hero,
+        .hero-inner,
+        .hero-content,
+        .hero-title,
+        .app-subtitle,
+        .hero-panel,
+        .panel-row {
+            direction: rtl;
+            text-align: right;
         }
 
         .hero-top-badge {
-            justify-self: start;
+            justify-self: end;
             display: inline-flex;
             align-items: center;
+            flex-direction: row-reverse;
             gap: 8px;
             width: fit-content;
-            min-height: 32px;
+            min-height: 30px;
             padding: 6px 12px;
             border-radius: 999px;
             background: rgba(255, 255, 255, 0.10);
@@ -168,36 +182,42 @@ st.markdown(
 
         .hero-content {
             max-width: 820px;
-            margin-right: auto;
-            margin-left: 0;
+            margin-right: 0;
+            margin-left: auto;
+            direction: rtl;
+            text-align: right;
         }
 
         .hero-title {
-            margin: 0 0 10px;
-            color: #f6fbf9;
-            font-size: 32px;
+            margin: 0 0 8px;
+            color: #ffffff;
+            font-size: 30px;
             line-height: 1.35;
             font-weight: 800;
             text-align: right;
+            direction: rtl;
         }
 
         .hero-title::after {
             content: "";
             display: block;
-            width: 72px;
+            width: 64px;
             height: 3px;
             margin-top: 8px;
+            margin-right: 0;
+            margin-left: auto;
             border-radius: 999px;
-            background: linear-gradient(90deg, var(--accent), rgba(215, 162, 74, 0.15));
+            background: linear-gradient(90deg, rgba(215, 162, 74, 0.15), var(--accent));
         }
 
         .app-subtitle {
             margin: 0;
-            color: #d9e7e4;
-            font-size: 14.5px;
-            line-height: 1.9;
+            color: #dce9e6;
+            font-size: 14px;
+            line-height: 1.8;
             font-weight: 500;
             text-align: right;
+            direction: rtl;
         }
 
         .hero-panel {
