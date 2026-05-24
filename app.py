@@ -61,6 +61,9 @@ st.markdown(
             background-size: 28px 28px;
             color: #1e2420;
         }
+        html, body, [class*="css"] {
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        }
         [data-testid="stHeader"] {
             background: rgba(243, 246, 247, 0.88);
         }
@@ -111,6 +114,22 @@ st.markdown(
                 linear-gradient(180deg, transparent 0 58%, rgba(46,111,100,0.07) 58% 58.2%, transparent 58.2% 100%);
             pointer-events: none;
         }
+        .hero::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -30%;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(232, 169, 73, 0.13), transparent);
+            animation: scan-line 5.5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes scan-line {
+            0%, 30% { right: -32%; opacity: 0; }
+            45%, 70% { opacity: 1; }
+            100% { right: 102%; opacity: 0; }
+        }
         .hero-inner {
             position: relative;
             display: grid;
@@ -123,6 +142,7 @@ st.markdown(
             background: #f7fbfa;
             border-radius: 8px;
             padding: 0.85rem;
+            box-shadow: inset 4px 0 0 #e8a949;
         }
         .panel-row {
             display: flex;
@@ -132,6 +152,9 @@ st.markdown(
             padding: 0.42rem 0;
             color: #4e5d58;
             font-size: 0.88rem;
+        }
+        .panel-row span {
+            text-align: right;
         }
         .panel-row:last-child {
             border-bottom: 0;
@@ -172,19 +195,48 @@ st.markdown(
             font-weight: 700;
             margin-bottom: 0.55rem;
         }
-        [data-testid="stMetric"] {
+        .status-pill::before {
+            content: "";
+            display: inline-block;
+            width: 0.45rem;
+            height: 0.45rem;
+            margin-left: 0.45rem;
+            border-radius: 999px;
+            background: #e8a949;
+            box-shadow: 0 0 0 4px rgba(232, 169, 73, 0.16);
+        }
+        .metric-card {
             background: #ffffff;
             border: 1px solid #d7e0dc;
             border-radius: 8px;
-            padding: 0.9rem 1rem;
+            padding: 1rem 1.05rem;
             box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
+            min-height: 7.1rem;
+            position: relative;
+            overflow: hidden;
         }
-        [data-testid="stMetricLabel"] {
+        .metric-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: #2e6f64;
+        }
+        .metric-label {
             color: #53605a;
+            font-size: 0.88rem;
+            margin-bottom: 0.55rem;
         }
-        [data-testid="stMetricValue"] {
+        .metric-value {
             color: #123d39;
             font-weight: 750;
+            font-size: 2rem;
+            line-height: 1.1;
+        }
+        .metric-note {
+            color: #7a8581;
+            font-size: 0.78rem;
+            margin-top: 0.5rem;
         }
         .stDownloadButton > button {
             border-radius: 8px;
@@ -209,12 +261,20 @@ st.markdown(
             min-height: 5.2rem;
             border-radius: 8px;
             background: #eef3f1;
+            direction: rtl;
+            padding: 1rem;
         }
         [data-testid="stFileUploaderDropzone"] svg {
-            width: 1.45rem;
-            height: 1.45rem;
+            width: 1.15rem;
+            height: 1.15rem;
         }
         [data-testid="stFileUploaderDropzone"] button {
+            border-radius: 8px;
+        }
+        [data-testid="stFileUploaderFile"] {
+            direction: rtl;
+            background: #ffffff;
+            border: 1px solid #d7e0dc;
             border-radius: 8px;
         }
         [data-testid="stDataFrame"] {
@@ -250,8 +310,38 @@ st.markdown(
             color: #687670;
             font-size: 0.88rem;
         }
+        .results-shell {
+            background: rgba(255,255,255,0.96);
+            border: 1px solid #d7e0dc;
+            border-radius: 8px;
+            padding: 0.95rem;
+            box-shadow: 0 8px 24px rgba(27, 43, 40, 0.055);
+        }
+        .signal-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.7rem;
+            margin: 0.35rem 0 0.85rem 0;
+        }
+        .signal-item {
+            background: #f7fbfa;
+            border: 1px solid #dbe7e2;
+            border-radius: 8px;
+            padding: 0.75rem 0.85rem;
+            color: #52615c;
+            font-size: 0.86rem;
+        }
+        .signal-item strong {
+            display: block;
+            color: #173a36;
+            font-size: 0.96rem;
+            margin-bottom: 0.25rem;
+        }
         @media (max-width: 860px) {
             .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .signal-strip {
                 grid-template-columns: 1fr;
             }
         }
