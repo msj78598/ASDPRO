@@ -886,42 +886,23 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-st.markdown(
-    """
-    <div class="hero" dir="rtl">
-        <div class="hero-inner" dir="rtl">
-            <div class="hero-top-badge">
-                <span class="hero-top-badge-icon"></span>
-                <span>تحليل عالي الثقة</span>
-            </div>
-
-            <div class="hero-content">
-                <h1 class="hero-title">تحليل الفاقد المحتمل</h1>
-                <div class="app-subtitle">
-                    منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة،
-                    مع اختيار أقوى قراءة لكل عداد.
-                </div>
-            </div>
-
-            <div class="hero-panel">
-                <div class="panel-row">
-                    <span>محرك التحليل</span>
-                    <strong>AI + V/I Rules</strong>
-                </div>
-                <div class="panel-row">
-                    <span>سياسة الإخراج</span>
-                    <strong>حالات مؤكدة فقط</strong>
-                </div>
-                <div class="panel-row">
-                    <span>التكرارات</span>
-                    <strong>أقوى قراءة لكل عداد</strong>
-                </div>
-            </div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+st.markdown("""<div class="hero" dir="rtl">
+<div class="hero-inner" dir="rtl">
+<div class="hero-top-badge">
+<span class="hero-top-badge-icon"></span>
+<span>تحليل عالي الثقة</span>
+</div>
+<div class="hero-content">
+<h1 class="hero-title">تحليل الفاقد المحتمل</h1>
+<div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+</div>
+<div class="hero-panel">
+<div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
+<div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
+<div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+</div>
+</div>
+</div>""", unsafe_allow_html=True)
 
 upload_column, template_column = st.columns([1.15, 0.85], gap="large")
 with upload_column:
