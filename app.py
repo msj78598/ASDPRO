@@ -38,7 +38,7 @@ ANALYSIS_SETTINGS = {
 
 
 INPUT_COLUMNS = [
-    ("Meter Number", "رقم العداد أو معرف الآلة", "MMF202080000001"),
+    ("Meter Number", "رقم العداد أو معرف الأصل", "MMF202080000001"),
     ("V1", "جهد الفاز الأول", "230.0"),
     ("V2", "جهد الفاز الثاني", "229.5"),
     ("V3", "جهد الفاز الثالث", "231.0"),
@@ -54,35 +54,76 @@ st.markdown(
         .stApp {
             direction: rtl;
             text-align: right;
-            background: #f6f7f4;
+            background: #f5f7f6;
             color: #1e2420;
         }
         [data-testid="stSidebar"] {
             display: none;
         }
         .block-container {
-            padding-top: 1.5rem;
+            padding-top: 1.1rem;
             padding-bottom: 2rem;
-            max-width: 1280px;
+            max-width: 1180px;
         }
         h1, h2, h3 {
             letter-spacing: 0;
         }
         h1 {
-            font-size: 2rem;
-            margin-bottom: 0.3rem;
+            font-size: 2.15rem;
+            margin-bottom: 0.2rem;
             color: #15211e;
+            font-weight: 750;
         }
         .app-subtitle {
             color: #59645f;
-            margin-bottom: 1.1rem;
+            margin-bottom: 0.8rem;
             font-size: 1rem;
+            line-height: 1.8;
+        }
+        .hero {
+            background: #ffffff;
+            border: 1px solid #dbe3dd;
+            border-radius: 8px;
+            padding: 1.05rem 1.15rem;
+            box-shadow: 0 1px 3px rgba(30, 36, 32, 0.05);
+            margin-bottom: 0.9rem;
+        }
+        .workflow-card {
+            background: #ffffff;
+            border: 1px solid #dbe3dd;
+            border-radius: 8px;
+            padding: 0.85rem 0.95rem;
+            min-height: 4.2rem;
+            margin-bottom: 0.55rem;
+        }
+        .workflow-title {
+            color: #31433d;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.45rem;
+        }
+        .workflow-note {
+            color: #63706b;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            margin-bottom: 0.65rem;
+        }
+        .status-pill {
+            display: inline-block;
+            background: #e8f0ec;
+            color: #28574f;
+            border: 1px solid #cdded6;
+            border-radius: 999px;
+            padding: 0.25rem 0.65rem;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 0.55rem;
         }
         [data-testid="stMetric"] {
             background: #ffffff;
             border: 1px solid #dde4de;
             border-radius: 8px;
-            padding: 0.9rem 1rem;
+            padding: 0.85rem 0.95rem;
             box-shadow: 0 1px 2px rgba(30, 36, 32, 0.05);
         }
         [data-testid="stMetricLabel"] {
@@ -96,7 +137,8 @@ st.markdown(
             border: 1px solid #2e6f64;
             background: #2e6f64;
             color: white;
-            min-height: 2.55rem;
+            min-height: 2.7rem;
+            font-weight: 700;
         }
         .stDownloadButton > button:hover {
             border-color: #244f49;
@@ -104,15 +146,18 @@ st.markdown(
             color: white;
         }
         [data-testid="stFileUploader"] {
-            background: #ffffff;
-            border: 1px solid #dde4de;
+            background: #f8faf9;
+            border: 1px dashed #b7c6bf;
             border-radius: 8px;
-            padding: 0.85rem;
+            padding: 0.7rem;
         }
         [data-testid="stDataFrame"] {
             border: 1px solid #dde4de;
             border-radius: 8px;
             overflow: hidden;
+        }
+        .stAlert {
+            border-radius: 8px;
         }
     </style>
     """,
@@ -335,20 +380,44 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-st.title("تحليل الفاقد المحتمل")
 st.markdown(
-    "<div class='app-subtitle'>ارفع ملف القراءات للحصول على قائمة مختصرة بالعدادات الأعلى دلالة، بدون تكرار للعدادات.</div>",
+    """
+    <div class="hero">
+        <div class="status-pill">تحليل عالي الثقة</div>
+        <h1>تحليل الفاقد المحتمل</h1>
+        <div class="app-subtitle">قائمة نهائية مختصرة بالعدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+    </div>
+    """,
     unsafe_allow_html=True,
 )
 
-top_left, top_right = st.columns([2, 1])
-with top_left:
+upload_column, template_column = st.columns([1.45, 1], gap="large")
+with upload_column:
+    st.markdown(
+        """
+        <div class="workflow-card">
+            <div class="workflow-title">ملف البيانات</div>
+            <div class="workflow-note">صيغة Excel أو CSV بالأعمدة القياسية للجهد والتيار.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     uploaded_file = st.file_uploader(
         "ملف البيانات",
         type=["xlsx", "csv"],
         accept_multiple_files=False,
+        label_visibility="collapsed",
     )
-with top_right:
+with template_column:
+    st.markdown(
+        """
+        <div class="workflow-card">
+            <div class="workflow-title">نموذج الإدخال</div>
+            <div class="workflow-note">ملف جاهز للتعبئة بنفس أسماء الأعمدة المطلوبة.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.download_button(
         "تحميل نموذج البيانات",
         data=build_input_template(),
@@ -366,7 +435,8 @@ if uploaded_file is None:
 
 try:
     input_df = read_input_file(uploaded_file, uploaded_file.name)
-    results_df = analyze(input_df)
+    with st.spinner("جاري تحليل الملف..."):
+        results_df = analyze(input_df)
 except Exception as exc:
     st.error(f"تعذر تحليل الملف: {exc}")
     st.stop()
