@@ -53,17 +53,32 @@ INPUT_COLUMNS = [
 st.markdown(
     """
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap');
+        :root {
+            --se-blue: #0078FC;
+            --se-blue-700: #0A57C2;
+            --se-navy: #143C90;
+            --se-navy-900: #0C2A66;
+            --se-teal: #23C2C8;
+            --se-cyan: #7FD8E8;
+            --se-cyan-soft: #A8E4F0;
+            --se-bg: #EEF4FB;
+            --se-ink: #15294A;
+            --se-muted: #5B6B82;
+            --se-border: #D8E3F2;
+            --se-card: #FFFFFF;
+        }
         .stApp {
             direction: rtl;
             text-align: right;
-            background: #f4f7f8;
-            color: #1e2420;
+            background: var(--se-bg);
+            color: var(--se-ink);
         }
         html, body, [class*="css"] {
-            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            font-family: "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
         }
         [data-testid="stHeader"] {
-            background: rgba(244, 247, 248, 0.92);
+            background: rgba(238, 244, 251, 0.92);
         }
         [data-testid="stToolbar"] {
             display: none;
@@ -83,10 +98,10 @@ st.markdown(
             font-size: 2.25rem;
             margin: 0 0 0.35rem 0;
             color: #ffffff;
-            font-weight: 750;
+            font-weight: 800;
         }
         .app-subtitle {
-            color: #d8e7e4;
+            color: #dceaff;
             margin: 0;
             font-size: 1.02rem;
             line-height: 1.8;
@@ -96,20 +111,21 @@ st.markdown(
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            padding: 0.95rem 1rem;
+            padding: 0.95rem 1.2rem;
             margin-bottom: 1rem;
-            background: linear-gradient(90deg, #0d2f3c 0%, #15515f 100%);
+            background: linear-gradient(90deg, var(--se-navy) 0%, var(--se-blue) 100%);
             border-radius: 12px;
-            color: #eef7f5;
-            box-shadow: 0 10px 32px rgba(7, 36, 47, 0.18);
+            color: #eef6ff;
+            box-shadow: 0 10px 32px rgba(20, 60, 144, 0.22);
         }
         .topbar h1 {
             margin: 0;
-            font-size: 1.45rem;
+            font-size: 1.55rem;
+            font-weight: 900;
             letter-spacing: 0.02em;
         }
         .topbar .brand-note {
-            color: #c8e7e2;
+            color: #cfe2ff;
             font-size: 0.95rem;
             line-height: 1.5;
             max-width: 42rem;
@@ -118,12 +134,12 @@ st.markdown(
             position: relative;
             overflow: hidden;
             background:
-                radial-gradient(circle at 12% 20%, rgba(168, 224, 211, 0.24), transparent 24%),
-                linear-gradient(135deg, #0b3547 0%, #0f4f64 55%, #156574 100%);
-            border: 1px solid rgba(68, 121, 135, 0.32);
-            border-radius: 8px;
+                radial-gradient(circle at 12% 20%, rgba(127, 216, 232, 0.26), transparent 26%),
+                linear-gradient(135deg, var(--se-navy-900) 0%, var(--se-navy) 48%, var(--se-blue) 100%);
+            border: 1px solid rgba(35, 194, 200, 0.30);
+            border-radius: 10px;
             padding: 1.55rem 1.75rem;
-            box-shadow: 0 14px 30px rgba(8, 24, 34, 0.18);
+            box-shadow: 0 14px 30px rgba(12, 42, 102, 0.22);
             margin-bottom: 1rem;
         }
         .hero::before {
@@ -143,7 +159,7 @@ st.markdown(
             right: -30%;
             width: 32%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+            background: linear-gradient(90deg, transparent, rgba(127, 216, 232, 0.22), transparent);
             animation: scan-line 8s ease-in-out infinite;
             pointer-events: none;
         }
@@ -162,8 +178,8 @@ st.markdown(
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.7rem;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.09);
             border-radius: 8px;
             padding: 0.85rem;
             backdrop-filter: blur(6px);
@@ -175,21 +191,22 @@ st.markdown(
             margin-bottom: 1rem;
         }
         .module-card {
-            background: rgba(255, 255, 255, 0.98);
-            border: 1px solid rgba(41, 93, 103, 0.1);
+            background: var(--se-card);
+            border: 1px solid var(--se-border);
+            border-top: 3px solid var(--se-blue);
             border-radius: 12px;
             padding: 1.1rem 1.15rem;
-            box-shadow: 0 10px 24px rgba(8, 24, 34, 0.08);
+            box-shadow: 0 10px 24px rgba(20, 60, 144, 0.08);
             min-height: 6.2rem;
         }
         .module-title {
-            color: #0f4b58;
+            color: var(--se-navy);
             font-weight: 800;
             font-size: 1rem;
             margin: 0 0 0.45rem 0;
         }
         .module-desc {
-            color: #4b6f76;
+            color: var(--se-muted);
             font-size: 0.92rem;
             line-height: 1.6;
             margin: 0;
@@ -198,49 +215,50 @@ st.markdown(
             display: flex;
             justify-content: space-between;
             gap: 0.8rem;
-            border: 1px solid rgba(216, 231, 228, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.16);
             border-radius: 8px;
             padding: 0.65rem 0.75rem;
-            color: #d7e7e3;
+            color: #dceaff;
             font-size: 0.88rem;
-            background: rgba(9, 27, 30, 0.16);
+            background: rgba(10, 30, 70, 0.22);
         }
         .panel-row span {
             text-align: right;
         }
         .panel-row:last-child {
-            border-bottom: 1px solid rgba(216, 231, 228, 0.16);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.16);
         }
         .panel-row strong {
             color: #ffffff;
-            font-weight: 750;
+            font-weight: 800;
         }
         .workflow-card {
-            background: rgba(255,255,255,0.96);
-            border: 1px solid #d5e0dc;
+            background: var(--se-card);
+            border: 1px solid var(--se-border);
+            border-right: 3px solid var(--se-teal);
             border-radius: 8px;
             padding: 0.9rem 1rem;
             min-height: 5rem;
             margin: 0 0 0.55rem 0;
-            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
+            box-shadow: 0 4px 14px rgba(20, 60, 144, 0.06);
         }
         .workflow-title {
-            color: #203b37;
-            font-weight: 700;
+            color: var(--se-navy);
+            font-weight: 800;
             font-size: 0.95rem;
             margin-bottom: 0.45rem;
         }
         .workflow-note {
-            color: #63706b;
+            color: var(--se-muted);
             font-size: 0.88rem;
             line-height: 1.7;
             margin-bottom: 0.65rem;
         }
         .status-pill {
             display: inline-block;
-            background: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.14);
             color: #ffffff;
-            border: 1px solid rgba(255,255,255,0.22);
+            border: 1px solid rgba(255,255,255,0.26);
             border-radius: 999px;
             padding: 0.25rem 0.65rem;
             font-size: 0.82rem;
@@ -254,15 +272,15 @@ st.markdown(
             height: 0.45rem;
             margin-left: 0.45rem;
             border-radius: 999px;
-            background: #e8a949;
-            box-shadow: 0 0 0 4px rgba(232, 169, 73, 0.16);
+            background: var(--se-teal);
+            box-shadow: 0 0 0 4px rgba(35, 194, 200, 0.20);
         }
         .metric-card {
-            background: #ffffff;
-            border: 1px solid #d7e0dc;
+            background: var(--se-card);
+            border: 1px solid var(--se-border);
             border-radius: 8px;
             padding: 1rem 1.05rem;
-            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
+            box-shadow: 0 4px 14px rgba(20, 60, 144, 0.06);
             min-height: 7.1rem;
             position: relative;
             overflow: hidden;
@@ -272,40 +290,40 @@ st.markdown(
             position: absolute;
             inset: 0 0 0 auto;
             width: 4px;
-            background: #2e6f64;
+            background: linear-gradient(180deg, var(--se-blue), var(--se-teal));
         }
         .metric-label {
-            color: #53605a;
+            color: var(--se-muted);
             font-size: 0.88rem;
             margin-bottom: 0.55rem;
         }
         .metric-value {
-            color: #123d39;
-            font-weight: 750;
+            color: var(--se-navy);
+            font-weight: 800;
             font-size: 2rem;
             line-height: 1.1;
         }
         .metric-note {
-            color: #7a8581;
+            color: #8493a8;
             font-size: 0.78rem;
             margin-top: 0.5rem;
         }
         .stDownloadButton > button {
             border-radius: 8px;
-            border: 1px solid #2e6f64;
-            background: #2e6f64;
+            border: 1px solid var(--se-blue);
+            background: var(--se-blue);
             color: white;
             min-height: 2.7rem;
             font-weight: 700;
         }
         .stDownloadButton > button:hover {
-            border-color: #244f49;
-            background: #244f49;
+            border-color: var(--se-blue-700);
+            background: var(--se-blue-700);
             color: white;
         }
         [data-testid="stFileUploader"] {
-            background: #f8faf9;
-            border: 1px dashed #b7c6bf;
+            background: #f6f9fe;
+            border: 1px dashed #aac3e8;
             border-radius: 8px;
             padding: 0.7rem;
             margin-top: 0.1rem;
@@ -313,7 +331,7 @@ st.markdown(
         [data-testid="stFileUploaderDropzone"] {
             min-height: 5.2rem;
             border-radius: 8px;
-            background: #eef3f1;
+            background: #eaf1fb;
             direction: rtl;
             padding: 1rem;
         }
@@ -327,21 +345,21 @@ st.markdown(
         [data-testid="stFileUploaderFile"] {
             direction: rtl;
             background: #ffffff;
-            border: 1px solid #d7e0dc;
+            border: 1px solid var(--se-border);
             border-radius: 8px;
         }
         [data-testid="stDataFrame"] {
-            border: 1px solid #d7e0dc;
+            border: 1px solid var(--se-border);
             border-radius: 8px;
             overflow: hidden;
-            box-shadow: 0 4px 14px rgba(27, 43, 40, 0.045);
+            box-shadow: 0 4px 14px rgba(20, 60, 144, 0.06);
         }
         .stAlert {
             border-radius: 8px;
         }
         .app-footer {
-            color: #6b7772;
-            border-top: 1px solid #dbe3dd;
+            color: var(--se-muted);
+            border-top: 1px solid var(--se-border);
             font-size: 0.85rem;
             margin-top: 1.4rem;
             padding-top: 0.9rem;
@@ -353,22 +371,27 @@ st.markdown(
             align-items: center;
             gap: 1rem;
             margin: 0.2rem 0 0.6rem 0;
+            background: linear-gradient(90deg, var(--se-navy) 0%, var(--se-blue) 100%);
+            border-radius: 8px;
+            padding: 0.6rem 0.95rem;
+            box-shadow: 0 6px 18px rgba(20, 60, 144, 0.16);
         }
         .section-title h3 {
             margin: 0;
-            color: #1f312e;
+            color: #ffffff;
             font-size: 1.15rem;
+            font-weight: 800;
         }
         .section-title span {
-            color: #687670;
+            color: #cfe2ff;
             font-size: 0.88rem;
         }
         .results-shell {
-            background: rgba(255,255,255,0.96);
-            border: 1px solid #d7e0dc;
+            background: var(--se-card);
+            border: 1px solid var(--se-border);
             border-radius: 8px;
             padding: 0.95rem;
-            box-shadow: 0 8px 24px rgba(27, 43, 40, 0.055);
+            box-shadow: 0 8px 24px rgba(20, 60, 144, 0.07);
         }
         .signal-strip {
             display: grid;
@@ -377,22 +400,23 @@ st.markdown(
             margin: 0.35rem 0 0.85rem 0;
         }
         .signal-item {
-            background: #f7fbfa;
-            border: 1px solid #dbe7e2;
+            background: #f4f9ff;
+            border: 1px solid var(--se-border);
+            border-right: 3px solid var(--se-teal);
             border-radius: 8px;
             padding: 0.75rem 0.85rem;
-            color: #52615c;
+            color: var(--se-muted);
             font-size: 0.86rem;
         }
         .signal-item strong {
             display: block;
-            color: #173a36;
+            color: var(--se-navy);
             font-size: 0.96rem;
             margin-bottom: 0.25rem;
         }
         [data-testid="stExpander"] {
-            background: rgba(255,255,255,0.82);
-            border: 1px solid #d7e0dc;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--se-border);
             border-radius: 8px;
         }
         @media (max-width: 860px) {
@@ -403,6 +427,7 @@ st.markdown(
                 grid-template-columns: 1fr;
             }
         }
+    
     </style>
     """,
     unsafe_allow_html=True,
@@ -665,7 +690,7 @@ st.markdown(
     <div class="topbar">
         <div>
             <h1>SPAD</h1>
-            <div class="brand-note">نظام رصد حالات العبث بالأقمار الصناعية الموحد | Satellite 360 + Anomaly Cases | واجهة تقارير وتحليل موحدة.</div>
+            <div class="brand-note">السعودية للطاقة | نظام رصد حالات العبث بالأقمار الصناعية (SPAD) | Satellite 360 + Anomaly Cases.</div>
         </div>
         <div style="text-align:right;">
             <div class="status-pill">الوضع: شاشة رئيسية</div>
