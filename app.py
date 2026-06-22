@@ -11,7 +11,8 @@ from predict_loss import engineering_review, load_model, predict_loss, read_inpu
 
 
 st.set_page_config(
-    page_title="تحليل الفاقد المحتمل",
+    page_title="SPAD - نظام رصد حالات العبث بالأقمار الصناعية",
+    page_icon="🛰️",
     layout="wide",
 )
 
@@ -90,16 +91,39 @@ st.markdown(
             font-size: 1.02rem;
             line-height: 1.8;
         }
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.95rem 1rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, #0d2f3c 0%, #15515f 100%);
+            border-radius: 12px;
+            color: #eef7f5;
+            box-shadow: 0 10px 32px rgba(7, 36, 47, 0.18);
+        }
+        .topbar h1 {
+            margin: 0;
+            font-size: 1.45rem;
+            letter-spacing: 0.02em;
+        }
+        .topbar .brand-note {
+            color: #c8e7e2;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 42rem;
+        }
         .hero {
             position: relative;
             overflow: hidden;
             background:
-                radial-gradient(circle at 12% 20%, rgba(232, 169, 73, 0.22), transparent 22%),
-                linear-gradient(135deg, #0f2428 0%, #173d3a 56%, #245f55 100%);
-            border: 1px solid #143632;
+                radial-gradient(circle at 12% 20%, rgba(168, 224, 211, 0.24), transparent 24%),
+                linear-gradient(135deg, #0b3547 0%, #0f4f64 55%, #156574 100%);
+            border: 1px solid rgba(68, 121, 135, 0.32);
             border-radius: 8px;
-            padding: 1.45rem 1.55rem;
-            box-shadow: 0 14px 30px rgba(12, 31, 34, 0.16);
+            padding: 1.55rem 1.75rem;
+            box-shadow: 0 14px 30px rgba(8, 24, 34, 0.18);
             margin-bottom: 1rem;
         }
         .hero::before {
@@ -107,9 +131,9 @@ st.markdown(
             position: absolute;
             inset: 0;
             background:
-                linear-gradient(90deg, transparent 0 18%, rgba(255,255,255,0.08) 18% 18.12%, transparent 18.12% 100%),
-                linear-gradient(180deg, transparent 0 62%, rgba(255,255,255,0.07) 62% 62.16%, transparent 62.16% 100%);
-            opacity: 0.75;
+                linear-gradient(90deg, transparent 0 18%, rgba(255,255,255,0.06) 18% 18.12%, transparent 18.12% 100%),
+                linear-gradient(180deg, transparent 0 68%, rgba(255,255,255,0.06) 68% 68.16%, transparent 68.16% 100%);
+            opacity: 0.6;
             pointer-events: none;
         }
         .hero::after {
@@ -117,10 +141,10 @@ st.markdown(
             position: absolute;
             top: 0;
             right: -30%;
-            width: 30%;
+            width: 32%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
-            animation: scan-line 7s ease-in-out infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+            animation: scan-line 8s ease-in-out infinite;
             pointer-events: none;
         }
         @keyframes scan-line {
@@ -132,17 +156,43 @@ st.markdown(
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 0.95rem;
+            gap: 0.9rem;
         }
         .hero-panel {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 0.7rem;
-            border: 1px solid rgba(216, 231, 228, 0.22);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             background: rgba(255, 255, 255, 0.08);
             border-radius: 8px;
-            padding: 0.75rem;
+            padding: 0.85rem;
             backdrop-filter: blur(6px);
+        }
+        .module-panel {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.95rem;
+            margin-bottom: 1rem;
+        }
+        .module-card {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid rgba(41, 93, 103, 0.1);
+            border-radius: 12px;
+            padding: 1.1rem 1.15rem;
+            box-shadow: 0 10px 24px rgba(8, 24, 34, 0.08);
+            min-height: 6.2rem;
+        }
+        .module-title {
+            color: #0f4b58;
+            font-weight: 800;
+            font-size: 1rem;
+            margin: 0 0 0.45rem 0;
+        }
+        .module-desc {
+            color: #4b6f76;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            margin: 0;
         }
         .panel-row {
             display: flex;
@@ -612,18 +662,48 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
 
 st.markdown(
     """
+    <div class="topbar">
+        <div>
+            <h1>SPAD</h1>
+            <div class="brand-note">نظام رصد حالات العبث بالأقمار الصناعية الموحد | Satellite 360 + Anomaly Cases | واجهة تقارير وتحليل موحدة.</div>
+        </div>
+        <div style="text-align:right;">
+            <div class="status-pill">الوضع: شاشة رئيسية</div>
+            <div class="status-pill" style="background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.22);">نظام SPAD</div>
+        </div>
+    </div>
     <div class="hero">
         <div class="hero-inner">
             <div>
                 <div class="status-pill">تحليل عالي الثقة</div>
                 <h1>تحليل الفاقد المحتمل</h1>
-                <div class="app-subtitle">منصة ذكية لفرز قراءات الأحمال الكهربائية واستخراج العدادات الأعلى دلالة، مع اختيار أقوى قراءة لكل عداد.</div>
+                <div class="app-subtitle">واجهة موحدة مع دليل المستخدم لنظام SPAD لرصد حالات العبث بالأقمار الصناعية.</div>
             </div>
             <div class="hero-panel">
-                <div class="panel-row"><span>محرك التحليل</span><strong>AI + V/I Rules</strong></div>
-                <div class="panel-row"><span>سياسة الإخراج</span><strong>حالات مؤكدة فقط</strong></div>
-                <div class="panel-row"><span>التكرارات</span><strong>أقوى قراءة لكل عداد</strong></div>
+                <div class="panel-row"><span>شاشة رئيسية</span><strong>نظرة عامة فورية</strong></div>
+                <div class="panel-row"><span>Satellite 360</span><strong>تفاصيل العداد والموقع</strong></div>
+                <div class="panel-row"><span>Anomaly Cases</span><strong>حالات غير طبيعية</strong></div>
             </div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div class="module-panel">
+        <div class="module-card">
+            <p class="module-title">الشاشة الرئيسية</p>
+            <p class="module-desc">نظرة عامة على الأداء، الحالات المؤكدة، وملخص فوري للوضع العام.</p>
+        </div>
+        <div class="module-card">
+            <p class="module-title">Satellite 360</p>
+            <p class="module-desc">عرض تفصيلي لبيانات العداد والموقع، مع تقييم احتمالية العبث.</p>
+        </div>
+        <div class="module-card">
+            <p class="module-title">Anomaly Cases</p>
+            <p class="module-desc">تقرير الحالات غير الطبيعية مع بيانات الموقع والاستهلاك ومؤشرات الانحراف.</p>
         </div>
     </div>
     """,
