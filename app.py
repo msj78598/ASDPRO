@@ -11,8 +11,8 @@ from predict_loss import engineering_review, load_model, predict_loss, read_inpu
 
 
 st.set_page_config(
-    page_title="SPAD - نظام رصد حالات العبث بالأقمار الصناعية",
-    page_icon="🛰️",
+    page_title="تحليل الفاقد المحتمل",
+    page_icon="📊",
     layout="wide",
 )
 
@@ -687,48 +687,13 @@ def analyze(input_df: pd.DataFrame) -> pd.DataFrame:
 
 st.markdown(
     """
-    <div class="topbar">
-        <div>
-            <h1>SPAD</h1>
-            <div class="brand-note">السعودية للطاقة | نظام رصد حالات العبث بالأقمار الصناعية (SPAD) | Satellite 360 + Anomaly Cases.</div>
-        </div>
-        <div style="text-align:right;">
-            <div class="status-pill">الوضع: شاشة رئيسية</div>
-            <div class="status-pill" style="background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.22);">نظام SPAD</div>
-        </div>
-    </div>
     <div class="hero">
         <div class="hero-inner">
             <div>
                 <div class="status-pill">تحليل عالي الثقة</div>
                 <h1>تحليل الفاقد المحتمل</h1>
-                <div class="app-subtitle">واجهة موحدة مع دليل المستخدم لنظام SPAD لرصد حالات العبث بالأقمار الصناعية.</div>
+                <div class="app-subtitle">تحليل قراءات الجهد والتيار لرصد حالات الفاقد المحتمل بدقة عالية.</div>
             </div>
-            <div class="hero-panel">
-                <div class="panel-row"><span>شاشة رئيسية</span><strong>نظرة عامة فورية</strong></div>
-                <div class="panel-row"><span>Satellite 360</span><strong>تفاصيل العداد والموقع</strong></div>
-                <div class="panel-row"><span>Anomaly Cases</span><strong>حالات غير طبيعية</strong></div>
-            </div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.markdown(
-    """
-    <div class="module-panel">
-        <div class="module-card">
-            <p class="module-title">الشاشة الرئيسية</p>
-            <p class="module-desc">نظرة عامة على الأداء، الحالات المؤكدة، وملخص فوري للوضع العام.</p>
-        </div>
-        <div class="module-card">
-            <p class="module-title">Satellite 360</p>
-            <p class="module-desc">عرض تفصيلي لبيانات العداد والموقع، مع تقييم احتمالية العبث.</p>
-        </div>
-        <div class="module-card">
-            <p class="module-title">Anomaly Cases</p>
-            <p class="module-desc">تقرير الحالات غير الطبيعية مع بيانات الموقع والاستهلاك ومؤشرات الانحراف.</p>
         </div>
     </div>
     """,
