@@ -273,6 +273,29 @@ st.markdown(
             line-height: 1.7;
             margin-bottom: 0.65rem;
         }
+        .panel-head {
+            color: var(--se-navy);
+            font-weight: 800;
+            font-size: 1.02rem;
+            margin-bottom: 0.2rem;
+        }
+        .panel-sub {
+            color: var(--se-muted);
+            font-size: 0.88rem;
+            line-height: 1.7;
+            margin-bottom: 0.7rem;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.panel-head) {
+            background: var(--se-card);
+            border: 1px solid var(--se-border) !important;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(20, 60, 144, 0.06);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        div[data-testid="stVerticalBlockBorderWrapper"]:has(.panel-head):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(20, 60, 144, 0.13);
+        }
         .status-pill {
             display: inline-block;
             background: rgba(255,255,255,0.14);
@@ -719,40 +742,43 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-upload_column, template_column = st.columns([1.15, 0.85], gap="large")
+st.markdown(
+    '<div class="section-title"><h3>رفع بيانات القراءات</h3><span>ارفع ملف القراءات أو حمّل النموذج الجاهز للتعبئة</span></div>',
+    unsafe_allow_html=True,
+)
+
+template_column, upload_column = st.columns(2, gap="large")
 with upload_column:
-    st.markdown(
-        """
-        <div class="workflow-card">
-            <div class="workflow-title">ملف البيانات</div>
-            <div class="workflow-note">صيغة Excel أو CSV بالأعمدة القياسية للجهد والتيار.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    uploaded_file = st.file_uploader(
-        "ملف البيانات",
-        type=["xlsx", "csv"],
-        accept_multiple_files=False,
-        label_visibility="collapsed",
-    )
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="panel-head">ملف البيانات</div>
+            <div class="panel-sub">صيغة Excel أو CSV بالأعمدة القياسية للجهد والتيار.</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        uploaded_file = st.file_uploader(
+            "ملف البيانات",
+            type=["xlsx", "csv"],
+            accept_multiple_files=False,
+            label_visibility="collapsed",
+        )
 with template_column:
-    st.markdown(
-        """
-        <div class="workflow-card">
-            <div class="workflow-title">نموذج الإدخال</div>
-            <div class="workflow-note">ملف جاهز للتعبئة بنفس أسماء الأعمدة المطلوبة.</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.download_button(
-        "تحميل نموذج البيانات",
-        data=build_input_template(),
-        file_name="meter_input_template.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        use_container_width=True,
-    )
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="panel-head">نموذج الإدخال</div>
+            <div class="panel-sub">ملف جاهز للتعبئة بنفس أسماء الأعمدة المطلوبة.</div>
+            """,
+            unsafe_allow_html=True,
+        )
+        st.download_button(
+            "تحميل نموذج البيانات",
+            data=build_input_template(),
+            file_name="meter_input_template.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True,
+        )
 
 with st.expander("الأعمدة المطلوبة", expanded=False):
     st.dataframe(required_columns_table(), use_container_width=True, hide_index=True)
