@@ -133,14 +133,33 @@ st.markdown(
         .hero {
             position: relative;
             overflow: hidden;
+            color: #eef6ff;
+            display: flex;
+            align-items: center;
+            min-height: 170px;
             background:
-                radial-gradient(circle at 12% 20%, rgba(127, 216, 232, 0.26), transparent 26%),
+                url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='440'%20height='210'%20viewBox='0%200%20440%20210'%3E%3Cpolyline%20points='10,160%2075,125%20140,140%20205,80%20270,105%20335,45%20430,72'%20fill='none'%20stroke='%23ffffff'%20stroke-width='3'%20stroke-opacity='0.15'/%3E%3Cg%20fill='%23ffffff'%20fill-opacity='0.20'%3E%3Ccircle%20cx='205'%20cy='80'%20r='5'/%3E%3Ccircle%20cx='335'%20cy='45'%20r='5'/%3E%3C/g%3E%3C/svg%3E") left -10px center / 420px auto no-repeat,
+                radial-gradient(circle at 16% 28%, rgba(127, 216, 232, 0.30), transparent 32%),
                 linear-gradient(135deg, var(--se-navy-900) 0%, var(--se-navy) 48%, var(--se-blue) 100%);
             border: 1px solid rgba(35, 194, 200, 0.30);
-            border-radius: 10px;
-            padding: 1.55rem 1.75rem;
-            box-shadow: 0 14px 30px rgba(12, 42, 102, 0.22);
-            margin-bottom: 1rem;
+            border-radius: 14px;
+            padding: 1.7rem 1.95rem;
+            box-shadow: 0 16px 34px rgba(12, 42, 102, 0.24);
+            margin-bottom: 1.1rem;
+        }
+        .hero h1 {
+            color: #ffffff;
+            font-size: 2.35rem;
+            font-weight: 800;
+            margin: 0.15rem 0 0.5rem 0;
+            text-shadow: 0 2px 16px rgba(2, 18, 52, 0.38);
+        }
+        .metric-card, .workflow-card, .signal-item {
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .metric-card:hover, .workflow-card:hover, .signal-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(20, 60, 144, 0.15);
         }
         .hero::before {
             content: "";
