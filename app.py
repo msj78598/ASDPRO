@@ -350,6 +350,26 @@ st.markdown(
             font-size: 0.78rem;
             margin-top: 0.5rem;
         }
+        .stButton > button {
+            border-radius: 8px;
+            border: 1px solid var(--se-blue);
+            background: var(--se-blue);
+            color: white;
+            min-height: 2.8rem;
+            font-weight: 750;
+            transition: background 0.15s ease, transform 0.05s ease;
+        }
+        .stButton > button:hover {
+            border-color: var(--se-blue-700);
+            background: var(--se-blue-700);
+            color: white;
+        }
+        .stButton > button:active {
+            transform: translateY(1px);
+        }
+        [data-testid="stProgress"] > div > div > div > div {
+            background-image: linear-gradient(90deg, var(--se-blue), var(--se-blue-700));
+        }
         .stDownloadButton > button {
             border-radius: 8px;
             border: 1px solid var(--se-blue);
@@ -398,6 +418,32 @@ st.markdown(
         }
         .stAlert {
             border-radius: 8px;
+        }
+        .stButton > button {
+            border-radius: 8px;
+            min-height: 2.7rem;
+            font-weight: 700;
+        }
+        .stButton > button[kind="primary"] {
+            background: linear-gradient(90deg, var(--se-navy), var(--se-blue));
+            border: none;
+            box-shadow: 0 8px 20px rgba(20, 60, 144, 0.22);
+        }
+        .stButton > button[kind="primary"]:hover {
+            background: linear-gradient(90deg, var(--se-navy-900), var(--se-blue-700));
+        }
+        [data-testid="stProgress"] {
+            margin: 0.5rem 0 0.2rem 0;
+        }
+        [data-testid="stProgress"] [role="progressbar"] {
+            height: 13px;
+            border-radius: 999px;
+            overflow: hidden;
+            background-color: #d8e3f2;
+        }
+        [data-testid="stProgress"] [role="progressbar"] > div {
+            background: linear-gradient(90deg, var(--se-blue), var(--se-teal)) !important;
+            border-radius: 999px;
         }
         .app-footer {
             color: var(--se-muted);
@@ -789,15 +835,68 @@ with st.expander("الأعمدة المطلوبة", expanded=False):
 
 if uploaded_file is None:
     st.info("اختر ملف Excel أو CSV يحتوي أعمدة القراءات المطلوبة.")
+    st.session_state.pop("results_df", None)
+    st.session_state.pop("analyzed_file", None)
     st.stop()
 
-try:
-    input_df = read_input_file(uploaded_file, uploaded_file.name)
-    with st.spinner("جاري تحليل الملف..."):
-        results_df = analyze(input_df)
-except Exception as exc:
-    st.error(f"تعذر تحليل الملف: {exc}")
+# إذا تغيّر الملف، أزل نتائج التشغيل السابق
+if st.session_state.get("analyzed_file") != uploaded_file.name:
+    st.session_state.pop("results_df", None)
+
+start_col, hint_col = st.columns([1, 2.2])
+with start_col:
+    start_clicked = st.button("▶  بدء التحليل", type="primary", use_container_width=True)
+with hint_col:
+    st.caption("اضغط لبدء معالجة الملف. قد تستغرق الملفات الكبيرة بضع لحظات، وسيظهر شريط التقدم أدناه.")
+
+if start_clicked:
+    progress = st.progress(0, text="جاري تجهيز الملف…")
+    try:
+        input_df = read_input_file(uploaded_file, uploaded_file.name)
+        row_count = len(input_df)
+        progress.progress(8, text=f"تم تحميل البيانات ({row_count:,} سجل) — جاري التحليل…")
+
+        # تحليل النموذج على دفعات حتى يتحرّك شريط التقدم بسلاسة مع الملفات الكبيرة
+        chunk_size = max(2000, (row_count // 20) + 1)
+        total_chunks = max(1, (row_count + chunk_size - 1) // chunk_size)
+        parts = []
+        start_index = 0
+        done_chunks = 0
+        while start_index < row_count:
+            chunk = input_df.iloc[start_index : start_index + chunk_size]
+            parts.append(
+                predict_loss(chunk, threshold=ANALYSIS_SETTINGS["threshold"], model=get_model())
+            )
+            done_chunks += 1
+            progress.progress(
+                min(80, 8 + int(72 * done_chunks / total_chunks)),
+                text=f"تحليل القراءات… ({done_chunks}/{total_chunks})",
+            )
+            start_index += chunk_size
+
+        model_results = (
+            pd.concat(parts)
+            if parts
+            else predict_loss(input_df, threshold=ANALYSIS_SETTINGS["threshold"], model=get_model())
+        )
+
+        progress.progress(88, text="المراجعة الفنية ولجنة الخبراء…")
+        review_kwargs = {key: value for key, value in ANALYSIS_SETTINGS.items() if key != "threshold"}
+        results_df = engineering_review(model_results, **review_kwargs)
+
+        st.session_state["results_df"] = results_df
+        st.session_state["analyzed_file"] = uploaded_file.name
+        progress.progress(100, text="اكتمل التحليل ✓")
+    except Exception as exc:
+        progress.empty()
+        st.error(f"تعذر تحليل الملف: {exc}")
+        st.stop()
+
+if "results_df" not in st.session_state:
+    st.info("الملف جاهز. اضغط «بدء التحليل» لعرض النتائج.")
     st.stop()
+
+results_df = st.session_state["results_df"]
 
 final_rows = results_df[results_df["FinalPotentialLoss"] == True].copy()
 unique_final_rows = unique_strongest_by_meter(final_rows)
