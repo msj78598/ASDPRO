@@ -78,7 +78,7 @@ st.markdown(
             font-family: "Tajawal", "Segoe UI", Tahoma, Arial, sans-serif;
         }
         [data-testid="stHeader"] {
-            background: rgba(238, 244, 251, 0.92);
+            display: none;
         }
         [data-testid="stToolbar"] {
             display: none;
@@ -87,7 +87,7 @@ st.markdown(
             display: none;
         }
         .block-container {
-            padding-top: 0.75rem;
+            padding-top: 1.4rem;
             padding-bottom: 2rem;
             max-width: 1220px;
         }
@@ -330,9 +330,9 @@ st.markdown(
         .metric-card::before {
             content: "";
             position: absolute;
-            inset: 0 0 0 auto;
-            width: 4px;
-            background: linear-gradient(180deg, var(--se-blue), var(--se-teal));
+            inset: 0 0 auto 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--se-blue), var(--se-teal));
         }
         .metric-label {
             color: var(--se-muted);
@@ -409,24 +409,28 @@ st.markdown(
         }
         .section-title {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            gap: 1rem;
-            margin: 0.2rem 0 0.6rem 0;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin: 0.4rem 0 0.7rem 0;
+            min-height: 2.85rem;
             background: linear-gradient(90deg, var(--se-navy) 0%, var(--se-blue) 100%);
-            border-radius: 8px;
-            padding: 0.6rem 0.95rem;
+            border-radius: 10px;
+            padding: 0.5rem 1.05rem;
             box-shadow: 0 6px 18px rgba(20, 60, 144, 0.16);
         }
         .section-title h3 {
             margin: 0;
             color: #ffffff;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 800;
         }
         .section-title span {
             color: #cfe2ff;
-            font-size: 0.88rem;
+            font-size: 0.85rem;
+            padding-right: 0.75rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.28);
         }
         .results-shell {
             background: var(--se-card);
@@ -444,7 +448,7 @@ st.markdown(
         .signal-item {
             background: #f4f9ff;
             border: 1px solid var(--se-border);
-            border-right: 3px solid var(--se-teal);
+            border-top: 3px solid var(--se-teal);
             border-radius: 8px;
             padding: 0.75rem 0.85rem;
             color: var(--se-muted);
@@ -821,15 +825,15 @@ st.markdown(
     '<div class="section-title"><h3>ملخص التشغيل</h3><span>تم تطبيق المعايير الفنية داخليًا قبل عرض القائمة النهائية</span></div>',
     unsafe_allow_html=True,
 )
-metric_columns = st.columns(4)
-metric_columns[0].markdown(metric_card("إجمالي السجلات", f"{len(results_df):,}", "عدد القراءات المستلمة"), unsafe_allow_html=True)
-metric_columns[1].markdown(metric_card("تم تحليلها", f"{analyzed_count:,}", "سجلات مكتملة وصالحة"), unsafe_allow_html=True)
-metric_columns[2].markdown(metric_card("عدادات مؤكدة", f"{len(unique_final_rows):,}", "بعد إزالة التكرارات"), unsafe_allow_html=True)
-metric_columns[3].markdown(metric_card("تكرارات مستبعدة", f"{removed_duplicates:,}", "احتفظنا بالأقوى دلالة"), unsafe_allow_html=True)
+metric_row_one = st.columns(3)
+metric_row_one[0].markdown(metric_card("إجمالي السجلات", f"{len(results_df):,}", "عدد القراءات المستلمة"), unsafe_allow_html=True)
+metric_row_one[1].markdown(metric_card("تم تحليلها", f"{analyzed_count:,}", "سجلات مكتملة وصالحة"), unsafe_allow_html=True)
+metric_row_one[2].markdown(metric_card("سجلات غير مكتملة", f"{invalid_count:,}", "لم تدخل في القرار النهائي"), unsafe_allow_html=True)
 
-secondary_metrics = st.columns(2)
-secondary_metrics[0].markdown(metric_card("حالات V/I مؤكدة", f"{vi_high_count:,}", "قرينة فولت/تيار مباشرة"), unsafe_allow_html=True)
-secondary_metrics[1].markdown(metric_card("سجلات غير مكتملة", f"{invalid_count:,}", "لم تدخل في القرار النهائي"), unsafe_allow_html=True)
+metric_row_two = st.columns(3)
+metric_row_two[0].markdown(metric_card("عدادات مؤكدة", f"{len(unique_final_rows):,}", "بعد إزالة التكرارات"), unsafe_allow_html=True)
+metric_row_two[1].markdown(metric_card("حالات V/I مؤكدة", f"{vi_high_count:,}", "قرينة فولت/تيار مباشرة"), unsafe_allow_html=True)
+metric_row_two[2].markdown(metric_card("تكرارات مستبعدة", f"{removed_duplicates:,}", "احتفظنا بالأقوى دلالة"), unsafe_allow_html=True)
 
 st.markdown(
     f"""
