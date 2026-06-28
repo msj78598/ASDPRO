@@ -32,7 +32,8 @@ ANALYSIS_SETTINGS = {
     "voltage_tolerance_pct": 20.0,
     "voltage_imbalance_pct": 20.0,
     "current_imbalance_pct": 30.0,
-    "current_diversion_imbalance_pct": 60.0,
+    "jumper_match_min_pct": 70.0,
+    "jumper_active_min_ratio": 0.10,
     "two_phase_current_similarity_pct": 15.0,
     "inactive_phase_current_pct": 20.0,
     "strong_probability_pct": 95.0,
@@ -671,8 +672,9 @@ def current_diversion_suspects(results: pd.DataFrame, min_share: float = 0.7) ->
     if flagged.empty:
         return flagged
 
-    strongest = flagged.groupby(meter_column)["CurrentImbalancePct"].idxmax()
-    return flagged.loc[strongest].sort_values("CurrentImbalancePct", ascending=False)
+    rank_column = "JumperSignatureMatch" if "JumperSignatureMatch" in flagged.columns else "CurrentImbalancePct"
+    strongest = flagged.groupby(meter_column)[rank_column].idxmax()
+    return flagged.loc[strongest].sort_values(rank_column, ascending=False)
 
 
 def make_diversion_table(rows: pd.DataFrame) -> pd.DataFrame:
@@ -684,8 +686,12 @@ def make_diversion_table(rows: pd.DataFrame) -> pd.DataFrame:
     table["رقم العداد/الآلة"] = (
         display["Meter Number"].astype(str) if "Meter Number" in display.columns else display.index.astype(str)
     )
-    table["نوع الاشتباه"] = "تحويل تيار (جمبر)"
+    table["نوع الاشتباه"] = "جنابر (تحويل تيار)"
     table["التوصية"] = "تأكيد ميداني بالكلامب على الكابلات"
+    if "JumperSignatureMatch" in display.columns:
+        table["تطابق البصمة المؤكدة %"] = display["JumperSignatureMatch"].map(
+            lambda value: "" if pd.isna(value) else f"{value:.0f}%"
+        )
     if "CurrentImbalancePct" in display.columns:
         table["عدم اتزان التيار %"] = display["CurrentImbalancePct"].map(
             lambda value: "" if pd.isna(value) else f"{value:.1f}%"
@@ -1008,7 +1014,7 @@ if diversion_count:
         <div class="signal-strip">
             <div class="signal-item" style="border-top-color:#E8A23A;background:#fff7ec;color:#7a4a09;">
                 <strong style="color:#9a5a06;">{diversion_count:,}</strong>
-                عدّادات باشتباه تحويل تيار (جمبر) — جهود سليمة مع عدم اتزان تيار شديد، تحتاج تأكيد ميداني
+                عدّادات تطابق بصمة جنابر مؤكدة (فازان مكبوحان + فاز مهيمن، جهود سليمة) — تحتاج تأكيد ميداني
             </div>
         </div>
         """,
@@ -1057,19 +1063,20 @@ else:
 
 if diversion_count:
     st.markdown(
-        '<div class="section-title"><h3>اشتباه تحويل تيار (جمبر)</h3><span>جهود سليمة مع عدم اتزان تيار شديد — يحتاج تأكيد ميداني بالكلامب على الكابلات</span></div>',
+        '<div class="section-title"><h3>اشتباه جنابر (مطابقة بصمة مؤكدة)</h3><span>عدّادات تطابق بصمة حالة عبث جنابر مثبتة ميدانياً — تعمل على عدّادات محوّل التيار والمباشرة</span></div>',
         unsafe_allow_html=True,
     )
     st.warning(
-        f"تم رصد {diversion_count:,} عدّاد بنمط اشتباه تحويل تيار. هذه ليست فاقداً مؤكداً، بل أولوية تفتيش ميداني: "
-        "قِس التيار الفعلي بالكلامب على الكابلات وقارنه بما يسجّله العدّاد."
+        f"تم رصد {diversion_count:,} عدّاد تطابق قراءاته بصمة جنابر مؤكدة (فازان مكبوحان + فاز مهيمن مع جهود سليمة). "
+        "هذه ليست فاقداً مؤكداً بل أولوية تفتيش ميداني: قِس التيار الفعلي بالكلامب على الكابلات وقارنه بما يسجّله العدّاد "
+        "(مع ضرب القراءة في نسبة محوّل التيار إن وُجد)."
     )
     diversion_table = make_diversion_table(diversion_rows)
     diversion_timestamp = datetime.now().strftime("%Y%m%d_%H%M")
     st.download_button(
-        "تصدير اشتباهات تحويل التيار",
-        data=df_to_excel_bytes(diversion_table, sheet_name="Current Diversion"),
-        file_name=f"current_diversion_suspects_{diversion_timestamp}.xlsx",
+        "تصدير اشتباهات الجنابر",
+        data=df_to_excel_bytes(diversion_table, sheet_name="Jumper Suspects"),
+        file_name=f"jumper_suspects_{diversion_timestamp}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )
     st.dataframe(
@@ -1080,6 +1087,7 @@ if diversion_count:
             "رقم العداد/الآلة": st.column_config.TextColumn(width="medium"),
             "نوع الاشتباه": st.column_config.TextColumn(width="small"),
             "التوصية": st.column_config.TextColumn(width="medium"),
+            "تطابق البصمة المؤكدة %": st.column_config.TextColumn(width="small"),
             "عدم اتزان التيار %": st.column_config.TextColumn(width="small"),
         },
     )

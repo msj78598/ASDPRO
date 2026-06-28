@@ -162,7 +162,8 @@ def engineering_review(
     voltage_tolerance_pct: float = 20.0,
     voltage_imbalance_pct: float = 20.0,
     current_imbalance_pct: float = 30.0,
-    current_diversion_imbalance_pct: float = 60.0,
+    jumper_match_min_pct: float = 70.0,
+    jumper_active_min_ratio: float = 0.10,
     two_phase_current_similarity_pct: float = 15.0,
     inactive_phase_current_pct: float = 20.0,
     min_active_current: float = 0.2,
@@ -216,14 +217,36 @@ def engineering_review(
         ["VoltageDeviationPct", "VoltageImbalancePct", "CurrentImbalancePct"]
     ].replace([np.inf, -np.inf], np.nan)
 
-    # كاشف عبث تحويل التيار (جمبر): جهود سليمة متزنة + الفازات الثلاث تحمل تياراً
-    # + عدم اتزان تيار شديد. توقيع يحوّل الحمل الفعلي حول العداد دون أثر على الجهد.
-    all_phases_active = current.min(axis=1) >= min_active_current
+    # كاشف تشابه بصمة الجنابر (نِسبي — يعمل على عدّادات محوّل التيار والعدّادات المباشرة سواء).
+    # البصمة المرجعية مستخرجة من حالة عبث جنابر مثبتة ميدانياً (العدّاد SMR2220661010335):
+    # فازان مكبوحان عند ~31% من الفاز المهيمن، مع جهود سليمة متزنة — أي تيار حمل محوّل حول العداد.
+    # القيم نِسبية (مقسومة على أعلى تيار) فلا تتأثر بنسبة محوّل التيار أو بحجم الحمل.
+    confirmed_jumper_signatures = [(0.305, 0.309)]
+
+    current_abs = current[["A1", "A2", "A3"]].abs().to_numpy(dtype=float)
+    sorted_current = np.sort(current_abs, axis=1)
+    c_low, c_mid, c_high = sorted_current[:, 0], sorted_current[:, 1], sorted_current[:, 2]
+    safe_high = np.where(c_high <= 0, np.nan, c_high)
+    norm_low = c_low / safe_high
+    norm_mid = c_mid / safe_high
+
+    best_match = np.zeros(len(reviewed))
+    for ref_low, ref_mid in confirmed_jumper_signatures:
+        similarity = 1.0 - (np.abs(norm_low - ref_low) + np.abs(norm_mid - ref_mid))
+        best_match = np.maximum(best_match, np.clip(similarity, 0.0, 1.0))
+    reviewed["JumperSignatureMatch"] = np.nan_to_num(best_match * 100.0)
+
+    healthy_voltage = (reviewed["VoltageDeviationPct"] <= voltage_tolerance_pct) & (
+        reviewed["VoltageImbalancePct"] <= 10.0
+    )
+    all_phases_active = pd.Series(
+        (c_low >= jumper_active_min_ratio * c_high) & (c_high >= min_active_current),
+        index=reviewed.index,
+    )
     reviewed["CurrentDiversionSuspect"] = (
-        (reviewed["VoltageDeviationPct"] <= voltage_tolerance_pct)
-        & (reviewed["VoltageImbalancePct"] <= 10.0)
+        healthy_voltage
         & all_phases_active
-        & (reviewed["CurrentImbalancePct"] >= current_diversion_imbalance_pct)
+        & (reviewed["JumperSignatureMatch"] >= jumper_match_min_pct)
     ).fillna(False)
 
     reviewed["EngineeringDecision"] = "لم يصنفه النموذج كفاقد"
