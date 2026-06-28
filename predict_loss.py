@@ -162,6 +162,7 @@ def engineering_review(
     voltage_tolerance_pct: float = 20.0,
     voltage_imbalance_pct: float = 20.0,
     current_imbalance_pct: float = 30.0,
+    current_diversion_imbalance_pct: float = 60.0,
     two_phase_current_similarity_pct: float = 15.0,
     inactive_phase_current_pct: float = 20.0,
     min_active_current: float = 0.2,
@@ -214,6 +215,16 @@ def engineering_review(
     reviewed[["VoltageDeviationPct", "VoltageImbalancePct", "CurrentImbalancePct"]] = reviewed[
         ["VoltageDeviationPct", "VoltageImbalancePct", "CurrentImbalancePct"]
     ].replace([np.inf, -np.inf], np.nan)
+
+    # كاشف عبث تحويل التيار (جمبر): جهود سليمة متزنة + الفازات الثلاث تحمل تياراً
+    # + عدم اتزان تيار شديد. توقيع يحوّل الحمل الفعلي حول العداد دون أثر على الجهد.
+    all_phases_active = current.min(axis=1) >= min_active_current
+    reviewed["CurrentDiversionSuspect"] = (
+        (reviewed["VoltageDeviationPct"] <= voltage_tolerance_pct)
+        & (reviewed["VoltageImbalancePct"] <= 10.0)
+        & all_phases_active
+        & (reviewed["CurrentImbalancePct"] >= current_diversion_imbalance_pct)
+    ).fillna(False)
 
     reviewed["EngineeringDecision"] = "لم يصنفه النموذج كفاقد"
     reviewed["EngineeringReason"] = ""

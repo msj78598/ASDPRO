@@ -32,6 +32,7 @@ ANALYSIS_SETTINGS = {
     "voltage_tolerance_pct": 20.0,
     "voltage_imbalance_pct": 20.0,
     "current_imbalance_pct": 30.0,
+    "current_diversion_imbalance_pct": 60.0,
     "two_phase_current_similarity_pct": 15.0,
     "inactive_phase_current_pct": 20.0,
     "strong_probability_pct": 95.0,
@@ -654,6 +655,54 @@ def unique_strongest_by_meter(results: pd.DataFrame) -> pd.DataFrame:
     return scored.loc[best_indices].sort_values("_EvidenceScore", ascending=False).drop(columns=["_EvidenceScore"])
 
 
+def current_diversion_suspects(results: pd.DataFrame, min_share: float = 0.7) -> pd.DataFrame:
+    """عدّادات يغلب على قراءاتها نمط اشتباه تحويل التيار (جمبر)، قراءة واحدة لكل عداد."""
+    if "CurrentDiversionSuspect" not in results.columns or results.empty:
+        return results.iloc[0:0].copy()
+
+    data = results.copy()
+    meter_column = "Meter Number"
+    if meter_column not in data.columns:
+        data[meter_column] = data.index.astype(str)
+    data[meter_column] = data[meter_column].astype(str).str.strip()
+
+    share = data.groupby(meter_column)["CurrentDiversionSuspect"].transform("mean")
+    flagged = data[(share >= min_share) & data["CurrentDiversionSuspect"]].copy()
+    if flagged.empty:
+        return flagged
+
+    strongest = flagged.groupby(meter_column)["CurrentImbalancePct"].idxmax()
+    return flagged.loc[strongest].sort_values("CurrentImbalancePct", ascending=False)
+
+
+def make_diversion_table(rows: pd.DataFrame) -> pd.DataFrame:
+    display = rows.copy()
+    if display.empty:
+        return display
+
+    table = pd.DataFrame(index=display.index)
+    table["رقم العداد/الآلة"] = (
+        display["Meter Number"].astype(str) if "Meter Number" in display.columns else display.index.astype(str)
+    )
+    table["نوع الاشتباه"] = "تحويل تيار (جمبر)"
+    table["التوصية"] = "تأكيد ميداني بالكلامب على الكابلات"
+    if "CurrentImbalancePct" in display.columns:
+        table["عدم اتزان التيار %"] = display["CurrentImbalancePct"].map(
+            lambda value: "" if pd.isna(value) else f"{value:.1f}%"
+        )
+    for column in ["A1", "A2", "A3", "V1", "V2", "V3"]:
+        if column in display.columns:
+            table[column] = display[column]
+    return table.reset_index(drop=True)
+
+
+def df_to_excel_bytes(frame: pd.DataFrame, sheet_name: str = "Sheet1") -> bytes:
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        frame.to_excel(writer, index=False, sheet_name=sheet_name)
+    return output.getvalue()
+
+
 def make_user_table(results: pd.DataFrame) -> pd.DataFrame:
     display = results.copy()
     if display.empty:
@@ -901,6 +950,14 @@ results_df = st.session_state["results_df"]
 final_rows = results_df[results_df["FinalPotentialLoss"] == True].copy()
 unique_final_rows = unique_strongest_by_meter(final_rows)
 removed_duplicates = max(len(final_rows) - len(unique_final_rows), 0)
+
+diversion_rows = current_diversion_suspects(results_df)
+if not diversion_rows.empty and not unique_final_rows.empty and "Meter Number" in unique_final_rows.columns:
+    confirmed_meters = set(unique_final_rows["Meter Number"].astype(str).str.strip())
+    diversion_rows = diversion_rows[
+        ~diversion_rows["Meter Number"].astype(str).str.strip().isin(confirmed_meters)
+    ]
+diversion_count = len(diversion_rows)
 analyzed_count = int((results_df["AnalysisStatus"] == "Analyzed").sum())
 invalid_count = int((results_df["AnalysisStatus"] != "Analyzed").sum())
 vi_high_count = int((results_df["VIExpertSeverity"] == "High").sum()) if "VIExpertSeverity" in results_df.columns else 0
@@ -945,6 +1002,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+if diversion_count:
+    st.markdown(
+        f"""
+        <div class="signal-strip">
+            <div class="signal-item" style="border-top-color:#E8A23A;background:#fff7ec;color:#7a4a09;">
+                <strong style="color:#9a5a06;">{diversion_count:,}</strong>
+                عدّادات باشتباه تحويل تيار (جمبر) — جهود سليمة مع عدم اتزان تيار شديد، تحتاج تأكيد ميداني
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
 left_column, right_column = st.columns([3, 1])
 with left_column:
     st.markdown(
@@ -981,6 +1051,35 @@ else:
             "الجهد الاسمي": st.column_config.TextColumn(width="small"),
             "انحراف الجهد %": st.column_config.TextColumn(width="small"),
             "عدم اتزان الجهد %": st.column_config.TextColumn(width="small"),
+            "عدم اتزان التيار %": st.column_config.TextColumn(width="small"),
+        },
+    )
+
+if diversion_count:
+    st.markdown(
+        '<div class="section-title"><h3>اشتباه تحويل تيار (جمبر)</h3><span>جهود سليمة مع عدم اتزان تيار شديد — يحتاج تأكيد ميداني بالكلامب على الكابلات</span></div>',
+        unsafe_allow_html=True,
+    )
+    st.warning(
+        f"تم رصد {diversion_count:,} عدّاد بنمط اشتباه تحويل تيار. هذه ليست فاقداً مؤكداً، بل أولوية تفتيش ميداني: "
+        "قِس التيار الفعلي بالكلامب على الكابلات وقارنه بما يسجّله العدّاد."
+    )
+    diversion_table = make_diversion_table(diversion_rows)
+    diversion_timestamp = datetime.now().strftime("%Y%m%d_%H%M")
+    st.download_button(
+        "تصدير اشتباهات تحويل التيار",
+        data=df_to_excel_bytes(diversion_table, sheet_name="Current Diversion"),
+        file_name=f"current_diversion_suspects_{diversion_timestamp}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    st.dataframe(
+        diversion_table,
+        use_container_width=True,
+        hide_index=True,
+        column_config={
+            "رقم العداد/الآلة": st.column_config.TextColumn(width="medium"),
+            "نوع الاشتباه": st.column_config.TextColumn(width="small"),
+            "التوصية": st.column_config.TextColumn(width="medium"),
             "عدم اتزان التيار %": st.column_config.TextColumn(width="small"),
         },
     )
